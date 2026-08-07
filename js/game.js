@@ -16,8 +16,8 @@ window.addEventListener('keydown', (e) => {
     keyboard.LEFT = true;
   }
 
-  if (e.keyCode == 38) {
-    keyboard.UP = true;
+  if (e.keyCode == 87) {
+    keyboard.W = true;
   }
 
   if (e.keyCode == 40) {
@@ -38,8 +38,8 @@ window.addEventListener('keyup', (e) => {
     keyboard.LEFT = false;
   }
 
-  if (e.keyCode == 38) {
-    keyboard.UP = false;
+  if (e.keyCode == 87) {
+    keyboard.W = false;
   }
 
   if (e.keyCode == 40) {
