@@ -1,9 +1,39 @@
 body {
+  background-image: url('img/0_background/desert.jpg');
+  background-position: center;
   display: flex;
+  justify-content: center;
   flex-direction: column;
   align-items: center;
+  min-height: 100vh;
+}
+
+@font-face {
+  font-family: patterns_and_dots;
+  src: url('fonts/PATTD___.TTF');
+  font-weight: normal;
+  font-style: normal;
+}
+
+h1 {
+  font-family: patterns_and_dots, sans-serif;
+  font-size: 3rem;
+  text-shadow: 4px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
 canvas {
   background-color: black;
+  display: block;
+}
+
+@media only screen and (max-width: 720px) {
+  canvas {
+    width: 100%;
+  }
+
+  @media only screen and (max-heigt: 480px) {
+    canvas {
+      height: 100vh;
+    }
+  }
 }

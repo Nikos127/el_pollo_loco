@@ -16,7 +16,11 @@ class MovableObject extends DrawableObject {
   }
 
   isAboveGround() {
-    return this.y < 180;
+    if (this instanceof ThrowableObject) {
+      return true;
+    } else {
+      return this.y < 180;
+    }
   }
 
   hit() {
@@ -39,6 +43,7 @@ class MovableObject extends DrawableObject {
   }
 
   isColliding(mo) {
+    console.log(mo.x, mo.y, this.y, this.x);
     return (
       this.x + this.width > mo.x &&
       this.y + this.height > mo.y &&
