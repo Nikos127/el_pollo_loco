@@ -7,7 +7,7 @@ class MovableObject extends DrawableObject {
   lastHit = 0;
 
   applyGravity() {
-    setInterval(() => {
+    setStoppableInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
@@ -43,7 +43,6 @@ class MovableObject extends DrawableObject {
   }
 
   isColliding(mo) {
-    console.log(mo.x, mo.y, this.y, this.x);
     return (
       this.x + this.width > mo.x &&
       this.y + this.height > mo.y &&
