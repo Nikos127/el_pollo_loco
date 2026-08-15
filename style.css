@@ -6,6 +6,7 @@ body {
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
+  overflow-y: hidden;
 }
 
 @font-face {
@@ -21,9 +22,22 @@ h1 {
   text-shadow: 4px 2px 8px rgba(0, 0, 0, 0.5);
 }
 
+#fullscreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 canvas {
   background-color: black;
   display: block;
+}
+
+#fullscreen:fullscreen canvas,
+#fullscreen:-webkit-full-screen canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 @media only screen and (max-width: 720px) {
