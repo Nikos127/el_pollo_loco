@@ -62,27 +62,13 @@ class Character extends MovableObject {
 
   animate() {
     setStoppableInterval(() => this.moveCharacter(), 1000 / 60);
-    setStoppableInterval(() => this.animateCharacter(), 50);
+    setStoppableInterval(() => this.playCharacterAnimation(), 50);
   }
 
   moveCharacter() {
-    if (this.canMoveRight()) {
-      this.otherDirection = false;
-      this.moveRight();
-    }
-
-    if (this.canMoveLeft()) {
-      this.otherDirection = true;
-      this.moveLeft();
-    }
-
-    if (this.canThrow()) {
-      this.jump();
-    }
-
-    if (this.world.keyboard.X) {
-      stopGame();
-    }
+    if (this.canMoveRight()) this.moveRight();
+    if (this.canMoveLeft()) this.moveLeft();
+    if (this.canJump()) this.jump();
 
     this.world.camera_x = -this.x + 100;
   }
@@ -91,31 +77,33 @@ class Character extends MovableObject {
     return this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x;
   }
 
-  moveRight() {}
+  moveRight() {
+    this.otherDirection = false;
+    super.moveRight();
+  }
 
   canMoveLeft() {
     return this.world.keyboard.LEFT && this.x > 0;
   }
 
-  canThrow() {
-    world.keyboard.W && !this.isAboveGround();
+  moveLeft() {
+    this.otherDirection = true;
+    super.moveLeft();
   }
 
-  animateCharacter() {
-    if (this.isDead()) {
-      this.playAnimation(this.IMAGES_DEAD);
-    } else if (this.isHurt()) {
-      this.playAnimation(this.IMAGES_HURT);
-    } else if (this.isAboveGround()) {
-      this.playAnimation(this.IMAGES_JUMPING);
-    } else {
-      if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-        this.playAnimation(this.IMAGES_WALKING);
-      }
-    }
+  canJump() {
+    return this.world.keyboard.W && !this.isAboveGround();
   }
 
   jump() {
     this.speedY = 30;
+  }
+
+  playCharacterAnimation() {
+    if (this.isDead()) this.playAnimation(this.IMAGES_DEAD);
+    else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
+    else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
+    else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
+      this.playAnimation(this.IMAGES_WALKING);
   }
 }
