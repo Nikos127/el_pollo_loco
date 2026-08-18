@@ -2,7 +2,7 @@ class Level {
   enemies;
   clouds;
   backgroundObjects;
-  level_end_x = 7200;
+  level_end_x = 4000;
 
   constructor(enemies, clouds, backgroundObjects) {
     this.enemies = enemies;
@@ -12,7 +12,7 @@ class Level {
   }
 
   createBackgroundObjects() {
-    for (let i = -1; i < 11; i++) {
+    for (let i = -1; i < 7; i++) {
       let currentBackground;
       const x = i * 720;
       if (i % 2 == 0) {

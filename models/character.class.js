@@ -100,10 +100,18 @@ class Character extends MovableObject {
   }
 
   playCharacterAnimation() {
-    if (this.isDead()) this.playAnimation(this.IMAGES_DEAD);
-    else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
+    if (this.isDead()) {
+      this.playAnimation(this.IMAGES_DEAD);
+      let timeSinceDeath = new Date().getTime() - this.timeOfDeath;
+      if (timeSinceDeath >= 2000) {
+        stopGame();
+      }
+    } else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
     else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
     else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
       this.playAnimation(this.IMAGES_WALKING);
+    else {
+      this.img = this.imageCache[this.IMAGES_WALKING[0]];
+    }
   }
 }
