@@ -7,6 +7,7 @@ class World {
   camera_x = 0;
   statusBar = new Statusbar();
   throwableObjects = [];
+  gameOverScreen = new GameOverScreen();
 
   constructor(canvas) {
     this.ctx = canvas.getContext('2d');
@@ -40,9 +41,13 @@ class World {
 
   checkCollidions() {
     this.level.enemies.forEach((enemy) => {
-      if (this.character.isColliding(enemy)) {
-        this.character.hit();
-        this.statusBar.setPercentage(this.character.energy);
+      if (this.character.isAboveEnemy(enemy)) {
+        if (!enemy.dead) {
+          this.groundLevel = this.groundLevel - enemy.y;
+        } else if (this.character.isColliding(enemy)) {
+          this.character.hit();
+          this.statusBar.setPercentage(this.character.energy);
+        }
       }
     });
   }
@@ -60,6 +65,19 @@ class World {
     this.addObjectsToMap(this.throwableObjects);
 
     this.ctx.translate(-this.camera_x, 0);
+
+    if (this.character.isDead()) {
+      let timeSinceDead = new Date().getTime() - this.character.timeOfDeath;
+      if (timeSinceDead >= 3500) {
+        this.gameOverScreen.img =
+          this.gameOverScreen.imageCache[this.gameOverScreen.IMAGES_LOST[1]];
+        this.addToMap(this.gameOverScreen);
+      } else if (timeSinceDead >= 2000) {
+        this.addToMap(this.gameOverScreen);
+      } else {
+        this.img;
+      }
+    }
 
     let self = this;
     requestAnimationFrame(function () {
@@ -79,7 +97,6 @@ class World {
     }
 
     mo.draw(this.ctx);
-    mo.drawFrame(this.ctx);
 
     if (mo.otherDirection) {
       this.flipImageBack(mo);

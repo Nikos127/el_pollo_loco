@@ -49,6 +49,7 @@ class Character extends MovableObject {
   ];
 
   world;
+  DeathAnimationDelay = 0;
 
   constructor() {
     super().loadImage('img/2_character_pepe/2_walk/W-21.png');
@@ -99,9 +100,23 @@ class Character extends MovableObject {
     this.speedY = 30;
   }
 
+  isAboveEnemy(enemy) {
+    if (
+      this.speedY <= 0 &&
+      this.y + this.height - this.offset.bottom <= enemy.y + enemy.height / 2
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   playCharacterAnimation() {
     if (this.isDead()) {
-      this.playAnimation(this.IMAGES_DEAD);
+      this.DeathAnimationDelay++;
+      if (this.DeathAnimationDelay % 6 === 0) {
+        this.playAnimationOnce(this.IMAGES_DEAD);
+      }
       let timeSinceDeath = new Date().getTime() - this.timeOfDeath;
       if (timeSinceDeath >= 2000) {
         stopGame();
@@ -110,8 +125,6 @@ class Character extends MovableObject {
     else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
     else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
       this.playAnimation(this.IMAGES_WALKING);
-    else {
-      this.img = this.imageCache[this.IMAGES_WALKING[0]];
-    }
+    else this.img = this.imageCache[this.IMAGES_WALKING[0]];
   }
 }

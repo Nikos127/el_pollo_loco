@@ -6,6 +6,7 @@ class MovableObject extends DrawableObject {
   energy = 100;
   lastHit = 0;
   timeOfDeath = 0;
+  groundlevel = 165;
 
   applyGravity() {
     setStoppableInterval(() => {
@@ -20,15 +21,19 @@ class MovableObject extends DrawableObject {
     if (this instanceof ThrowableObject) {
       return true;
     } else {
-      return this.y < 180;
+      return this.y < this.groundlevel;
     }
   }
 
   hit() {
+    if (this.isDead()) {
+      return;
+    }
     this.energy -= 5;
     if (this.energy <= 0) {
       this.energy = 0;
       this.timeOfDeath = new Date().getTime();
+      this.currentImage = 0;
     } else {
       this.lastHit = new Date().getTime();
     }
@@ -63,6 +68,13 @@ class MovableObject extends DrawableObject {
 
   playAnimation(images) {
     let i = this.currentImage % images.length;
+    let path = images[i];
+    this.img = this.imageCache[path];
+    this.currentImage++;
+  }
+
+  playAnimationOnce(images) {
+    let i = Math.min(this.currentImage, images.length - 1);
     let path = images[i];
     this.img = this.imageCache[path];
     this.currentImage++;
