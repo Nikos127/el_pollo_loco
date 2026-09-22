@@ -20,7 +20,11 @@ class ChickenSmall extends Chicken {
   }
 
   animate() {
-    setStoppableInterval(() => this.moveLeft(), 1000 / 60);
-    setStoppableInterval(() => this.playAnimation(this.IMAGES_WALKING), 200);
+    setStoppableInterval(() => {
+      if (!this.dead) this.moveLeft();
+    }, 1000 / 60);
+    setStoppableInterval(() => {
+      if (!this.dead) this.playAnimation(this.IMAGES_WALKING);
+    }, 200);
   }
 }

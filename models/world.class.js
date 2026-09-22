@@ -8,6 +8,7 @@ class World {
   statusBar = new Statusbar();
   throwableObjects = [];
   gameOverScreen = new GameOverScreen();
+  chickenSquash;
 
   constructor(canvas) {
     this.ctx = canvas.getContext('2d');
@@ -25,6 +26,8 @@ class World {
   run() {
     setStoppableInterval(() => {
       this.checkCollidions();
+    }, 1000 / 25);
+    setStoppableInterval(() => {
       this.checkThrowObjects();
     }, 200);
   }
@@ -41,15 +44,43 @@ class World {
 
   checkCollidions() {
     this.level.enemies.forEach((enemy) => {
-      if (this.character.isAboveEnemy(enemy)) {
-        if (!enemy.dead) {
-          this.groundLevel = this.groundLevel - enemy.y;
-        } else if (this.character.isColliding(enemy)) {
-          this.character.hit();
-          this.statusBar.setPercentage(this.character.energy);
-        }
+      let bottle = this.isBottleHit(enemy);
+      if (this.character.isAboveEnemy(enemy) && !enemy.dead) {
+        enemy.loadImage(enemy.IMAGES_DEAD);
+        this.character.groundlevel =
+          enemy.y - this.character.height + this.character.offset.bottom;
+        setTimeout(() => {
+          this.character.groundlevel = 165;
+        }, 200);
+        setTimeout(() => {
+          this.level.enemies = this.level.enemies.filter((e) => e !== enemy);
+        }, 1500);
+        enemy.dead = true;
+        this.chickenSquash = new Audio('audio/chicken-squash.mp3');
+        this.chickenSquash.volume = 0.3;
+        this.chickenSquash.play();
+      } else if (this.character.isColliding(enemy) && !enemy.dead) {
+        this.character.hit();
+        this.statusBar.setPercentage(this.character.energy);
+      } else if (bottle && !enemy.dead) {
+        enemy.dead = true;
+        enemy.loadImage(enemy.IMAGES_DEAD);
+        bottle.splash();
+        setTimeout(() => {
+          this.throwableObjects = this.throwableObjects.filter(
+            (b) => b !== bottle,
+          );
+        }, 500);
+        new Audio('audio/chicken-squash.mp3').play();
+        setTimeout(() => {
+          this.level.enemies = this.level.enemies.filter((e) => e !== enemy);
+        }, 1500);
       }
     });
+  }
+
+  isBottleHit(mo) {
+    return this.throwableObjects.find((bottle) => bottle.isColliding(mo));
   }
 
   draw() {
@@ -97,6 +128,7 @@ class World {
     }
 
     mo.draw(this.ctx);
+    mo.drawFrame(this.ctx);
 
     if (mo.otherDirection) {
       this.flipImageBack(mo);

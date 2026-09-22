@@ -50,6 +50,7 @@ class Character extends MovableObject {
 
   world;
   DeathAnimationDelay = 0;
+  walkingSound = new Audio('audio/walking.mp3');
 
   constructor() {
     super().loadImage('img/2_character_pepe/2_walk/W-21.png');
@@ -58,6 +59,8 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
     this.applyGravity();
+    this.walkingSound.loop = true;
+    this.walkingSound.volume = 1;
     this.animate();
   }
 
@@ -103,7 +106,10 @@ class Character extends MovableObject {
   isAboveEnemy(enemy) {
     if (
       this.speedY <= 0 &&
-      this.y + this.height - this.offset.bottom <= enemy.y + enemy.height / 2
+      this.y + this.height >= enemy.y &&
+      this.y + this.height <= enemy.y + enemy.height / 2 &&
+      this.x + this.width > enemy.x &&
+      this.x < enemy.x + enemy.width
     ) {
       return true;
     } else {
@@ -113,6 +119,7 @@ class Character extends MovableObject {
 
   playCharacterAnimation() {
     if (this.isDead()) {
+      this.walkingSound.pause();
       this.DeathAnimationDelay++;
       if (this.DeathAnimationDelay % 6 === 0) {
         this.playAnimationOnce(this.IMAGES_DEAD);
@@ -123,8 +130,12 @@ class Character extends MovableObject {
       }
     } else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
     else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);
-    else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT)
+    else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
       this.playAnimation(this.IMAGES_WALKING);
-    else this.img = this.imageCache[this.IMAGES_WALKING[0]];
+      if (this.walkingSound.paused) this.walkingSound.play();
+    } else {
+      this.img = this.imageCache[this.IMAGES_WALKING[0]];
+      this.walkingSound.pause();
+    }
   }
 }

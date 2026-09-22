@@ -1,4 +1,5 @@
 class MovableObject extends DrawableObject {
+  offset = { top: 0, right: 0, bottom: 0, left: 0 };
   speed = 0.15;
   otherDirection = false;
   speedY = 0;
@@ -10,9 +11,12 @@ class MovableObject extends DrawableObject {
 
   applyGravity() {
     setStoppableInterval(() => {
-      if (this.isAboveGround() || this.speedY > 0) {
+      if ((this.isAboveGround() || this.speedY > 0) && !this.splashed) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
+      }
+      if (this.speedY < -30) {
+        this.speedY = -30;
       }
     }, 1000 / 25);
   }
@@ -34,6 +38,7 @@ class MovableObject extends DrawableObject {
       this.energy = 0;
       this.timeOfDeath = new Date().getTime();
       this.currentImage = 0;
+      new Audio('audio/character-die.mp3').play();
     } else {
       this.lastHit = new Date().getTime();
     }
@@ -51,10 +56,10 @@ class MovableObject extends DrawableObject {
 
   isColliding(mo) {
     return (
-      this.x + this.width > mo.x &&
-      this.y + this.height > mo.y &&
-      this.x < mo.x &&
-      this.y < mo.y + mo.height
+      this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+      this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
+      this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
+      this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom
     );
   }
 
