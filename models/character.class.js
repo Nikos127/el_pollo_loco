@@ -101,6 +101,7 @@ class Character extends MovableObject {
 
   jump() {
     this.speedY = 30;
+    new Audio('audio/jumping.mp3').play();
   }
 
   isAboveEnemy(enemy) {
@@ -127,6 +128,7 @@ class Character extends MovableObject {
       let timeSinceDeath = new Date().getTime() - this.timeOfDeath;
       if (timeSinceDeath >= 2000) {
         stopGame();
+        new Audio('audio/lost.mp3').play();
       }
     } else if (this.isHurt()) this.playAnimation(this.IMAGES_HURT);
     else if (this.isAboveGround()) this.playAnimation(this.IMAGES_JUMPING);

@@ -39,6 +39,7 @@ class World {
         this.character.y + 100,
       );
       this.throwableObjects.push(bottle);
+      new Audio('audio/throw-bottle.mp3').play();
     }
   }
 
@@ -128,7 +129,6 @@ class World {
     }
 
     mo.draw(this.ctx);
-    mo.drawFrame(this.ctx);
 
     if (mo.otherDirection) {
       this.flipImageBack(mo);

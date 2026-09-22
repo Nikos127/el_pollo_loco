@@ -30,7 +30,7 @@ class MovableObject extends DrawableObject {
   }
 
   hit() {
-    if (this.isDead()) {
+    if (this.isDead() || this.isHurt()) {
       return;
     }
     this.energy -= 5;
@@ -41,6 +41,8 @@ class MovableObject extends DrawableObject {
       new Audio('audio/character-die.mp3').play();
     } else {
       this.lastHit = new Date().getTime();
+      new Audio('audio/hurt.mp3').play();
+      w;
     }
   }
 

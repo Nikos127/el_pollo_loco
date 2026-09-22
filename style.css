@@ -26,6 +26,28 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative;
+}
+
+#startscreen {
+  position: absolute;
+  inset: 0;
+  background-image: 'img/9_intro_outro_screens/start/startscreen_1.png';
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 24px;
+}
+
+#startscreen button {
+  padding: 12px 24px;
+  font-size: 24px;
+  background-color: orange;
+  border: 2px solid #803300;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 canvas {
