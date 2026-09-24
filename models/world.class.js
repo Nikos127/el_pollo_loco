@@ -9,6 +9,8 @@ class World {
   throwableObjects = [];
   gameOverScreen = new GameOverScreen();
   chickenSquash;
+  hasWon = false;
+  showWinScreen = false;
 
   constructor(canvas) {
     this.ctx = canvas.getContext('2d');
@@ -26,13 +28,35 @@ class World {
   run() {
     setStoppableInterval(() => {
       this.checkCollidions();
+      this.checkWin();
     }, 1000 / 25);
     setStoppableInterval(() => {
       this.checkThrowObjects();
     }, 200);
   }
 
+  checkWin() {
+    if (this.hasWon || this.character.isDead()) return;
+
+    const boss = this.level.enemies.find((enemy) => enemy instanceof Endboss);
+
+    if (!boss || !boss.dead) return;
+
+    this.hasWon = true;
+
+    setTimeout(() => {
+      this.showWinScreen = true;
+      stopGame();
+      new Audio('audio/won.mp3').play();
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    }, 1000);
+  }
+
   checkThrowObjects() {
+    if (this.hasWon) return;
     if (this.keyboard.SPACE) {
       let bottle = new ThrowableObject(
         this.character.x + 100,
@@ -44,10 +68,16 @@ class World {
   }
 
   checkCollidions() {
+    if (this.hasWon) return;
     this.level.enemies.forEach((enemy) => {
       let bottle = this.isBottleHit(enemy);
-      if (this.character.isAboveEnemy(enemy) && !enemy.dead) {
-        enemy.loadImage(enemy.IMAGES_DEAD);
+      if (
+        !(enemy instanceof Endboss) &&
+        this.character.isAboveEnemy(enemy) &&
+        !enemy.dead
+      ) {
+        enemy.currentImage = 0;
+        enemy.loadImage(enemy.IMAGES_DEAD[0]);
         this.character.groundlevel =
           enemy.y - this.character.height + this.character.offset.bottom;
         setTimeout(() => {
@@ -64,24 +94,37 @@ class World {
         this.character.hit();
         this.statusBar.setPercentage(this.character.energy);
       } else if (bottle && !enemy.dead) {
-        enemy.dead = true;
-        enemy.loadImage(enemy.IMAGES_DEAD);
         bottle.splash();
+
+        if (enemy instanceof Endboss) {
+          enemy.hit();
+        } else {
+          enemy.dead = true;
+          enemy.currentImage = 0;
+          enemy.loadImage(enemy.IMAGES_DEAD[0]);
+        }
+
         setTimeout(() => {
           this.throwableObjects = this.throwableObjects.filter(
             (b) => b !== bottle,
           );
         }, 500);
-        new Audio('audio/chicken-squash.mp3').play();
-        setTimeout(() => {
-          this.level.enemies = this.level.enemies.filter((e) => e !== enemy);
-        }, 1500);
+
+        if (enemy.dead) {
+          new Audio('audio/chicken-squash.mp3').play();
+
+          setTimeout(() => {
+            this.level.enemies = this.level.enemies.filter((e) => e !== enemy);
+          }, 1500);
+        }
       }
     });
   }
 
   isBottleHit(mo) {
-    return this.throwableObjects.find((bottle) => bottle.isColliding(mo));
+    return this.throwableObjects.find(
+      (bottle) => !bottle.splashed && bottle.isColliding(mo),
+    );
   }
 
   draw() {
@@ -98,7 +141,12 @@ class World {
 
     this.ctx.translate(-this.camera_x, 0);
 
-    if (this.character.isDead()) {
+    if (this.showWinScreen) {
+      this.gameOverScreen.img =
+        this.gameOverScreen.imageCache[this.gameOverScreen.IMAGES_WON[0]];
+      this.addToMap(this.gameOverScreen);
+    }
+    if (this.character.isDead() && !this.hasWon) {
       let timeSinceDead = new Date().getTime() - this.character.timeOfDeath;
       if (timeSinceDead >= 3500) {
         this.gameOverScreen.img =

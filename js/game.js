@@ -3,6 +3,35 @@ let world;
 let keyboard = new Keyboard();
 let intervalIds = [];
 
+const backgroundMusic = new Audio('audio/background-music.mp3');
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.2;
+
+async function toggleMusic(button) {
+  if (backgroundMusic.paused) {
+    try {
+      await backgroundMusic.play();
+    } catch (error) {
+      console.error('Music konnte nicht gestartet werden:', error);
+      return;
+    }
+  } else {
+    backgroundMusic.pause();
+  }
+
+  const isPlaying = !backgroundMusic.paused;
+  button.setAtribute('aria-pressed', String(isPlaying));
+  button.title = isPlaying ? 'Music ausschalten' : 'Music einschalten';
+}
+
+function startGame() {
+  if (world) return;
+
+  initLevel();
+  init();
+  document.getElementById('startscreen').remove();
+}
+
 function setStoppableInterval(fn, time) {
   let id = setInterval(fn, time);
   intervalIds.push(id);

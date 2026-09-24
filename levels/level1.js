@@ -1,25 +1,29 @@
-const level1 = new Level(
-  [
-    Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
-    Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
-    Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
-    Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
-    Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
-    Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
-    Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
-    Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
-    Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
-    Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
-    Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
-    Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
-    Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
-    Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
-    Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
-    Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
-    Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
-    Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
-    new Endboss(),
-  ],
-  [new Cloud()],
-  [],
-);
+let level1;
+
+function initLevel() {
+  level1 = new Level(
+    [
+      Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
+      Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
+      Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
+      Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
+      Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
+      Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
+      Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
+      Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
+      Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
+      Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
+      Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
+      Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
+      Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
+      Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
+      Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
+      Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
+      Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
+      Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
+      new Endboss(),
+    ],
+    [new Cloud()],
+    [],
+  );
+}

@@ -4,6 +4,8 @@ class GameOverScreen extends DrawableObject {
     'img/You won, you lost/Game Over.png',
   ];
 
+  IMAGES_WON = ['img/You won, you lost/You won A.png'];
+
   constructor() {
     super();
     this.x = 0;
@@ -13,5 +15,6 @@ class GameOverScreen extends DrawableObject {
 
     this.loadImage('img/You won, you lost/You lost.png');
     this.loadImages(this.IMAGES_LOST);
+    this.loadImages(this.IMAGES_WON);
   }
 }
