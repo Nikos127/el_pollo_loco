@@ -99,8 +99,8 @@ class Character extends MovableObject {
     return this.world.keyboard.W && !this.isAboveGround();
   }
 
-  jump() {
-    this.speedY = 30;
+  jump(strength = 30) {
+    this.speedY = strength;
     new Audio('audio/jumping.mp3').play();
   }
 

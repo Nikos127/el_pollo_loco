@@ -5,6 +5,7 @@ class World {
   canvas;
   keyboard;
   camera_x = 0;
+  endbossStatusBar = new EndbossStatusBar();
   statusBar = new Statusbar();
   throwableObjects = [];
   gameOverScreen = new GameOverScreen();
@@ -23,6 +24,11 @@ class World {
 
   setWorld() {
     this.character.world = this;
+    this.level.enemies.forEach((enemy) => {
+      if (enemy instanceof Endboss) {
+        enemy.world = this;
+      }
+    });
   }
 
   run() {
@@ -78,11 +84,7 @@ class World {
       ) {
         enemy.currentImage = 0;
         enemy.loadImage(enemy.IMAGES_DEAD[0]);
-        this.character.groundlevel =
-          enemy.y - this.character.height + this.character.offset.bottom;
-        setTimeout(() => {
-          this.character.groundlevel = 165;
-        }, 200);
+        this.character.jump(20);
         setTimeout(() => {
           this.level.enemies = this.level.enemies.filter((e) => e !== enemy);
         }, 1500);
@@ -93,11 +95,13 @@ class World {
       } else if (this.character.isColliding(enemy) && !enemy.dead) {
         this.character.hit();
         this.statusBar.setPercentage(this.character.energy);
-      } else if (bottle && !enemy.dead) {
+      }
+      if (bottle && !enemy.dead) {
         bottle.splash();
 
         if (enemy instanceof Endboss) {
           enemy.hit();
+          this.endbossStatusBar.setPercentage(enemy.energy);
         } else {
           enemy.dead = true;
           enemy.currentImage = 0;
@@ -140,6 +144,16 @@ class World {
     this.addObjectsToMap(this.throwableObjects);
 
     this.ctx.translate(-this.camera_x, 0);
+
+    const boss = this.level.enemies.find((enemy) => enemy instanceof Endboss);
+
+    if (
+      boss &&
+      boss.x + this.camera_x < this.canvas.width &&
+      boss.x + boss.width + this.camera_x > 0
+    ) {
+      this.addToMap(this.endbossStatusBar);
+    }
 
     if (this.showWinScreen) {
       this.gameOverScreen.img =
