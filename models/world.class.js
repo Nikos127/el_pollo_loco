@@ -7,6 +7,8 @@ class World {
   camera_x = 0;
   endbossStatusBar = new EndbossStatusBar();
   statusBar = new Statusbar();
+  bottleStatusBar = new BottleStatusBar();
+  coinStatusBar = new CoinStatusBar();
   throwableObjects = [];
   gameOverScreen = new GameOverScreen();
   chickenSquash;
@@ -35,6 +37,8 @@ class World {
     setStoppableInterval(() => {
       this.checkCollidions();
       this.checkWin();
+      this.checkBottleCollection();
+      this.checkCoinCollection();
     }, 1000 / 25);
     setStoppableInterval(() => {
       this.checkThrowObjects();
@@ -58,15 +62,42 @@ class World {
   }
 
   checkThrowObjects() {
-    if (this.hasWon) return;
-    if (this.keyboard.SPACE) {
-      let bottle = new ThrowableObject(
-        this.character.x + 100,
-        this.character.y + 100,
-      );
-      this.throwableObjects.push(bottle);
-      new Audio('audio/throw-bottle.mp3').play();
-    }
+    if (this.hasWon || this.character.isDead()) return;
+    if (!this.keyboard.SPACE || this.character.bottles <= 0) return;
+
+    const bottle = new ThrowableObject(
+      this.character.x + 100,
+      this.character.y + 100,
+    );
+
+    this.throwableObjects.push(bottle);
+    this.character.bottles--;
+    new Audio('audio/throw-bottle.mp3').play();
+  }
+
+  checkBottleCollection() {
+    if (this.hasWon || this.character.isDead()) return;
+
+    this.level.bottles = this.level.bottles.filter((bottle) => {
+      if (this.character.isColliding(bottle)) {
+        this.character.bottles++;
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  checkCoinCollection() {
+    if (this.hasWon || this.character.isDead()) return;
+
+    this.level.coins = this.level.coins.filter((coin) => {
+      if (this.character.isColliding(coin)) {
+        this.character.coins++;
+        return false;
+      }
+      return true;
+    });
   }
 
   checkCollidions() {
@@ -134,8 +165,12 @@ class World {
     this.addObjectsToMap(this.level.clouds);
     this.ctx.translate(-this.camera_x, 0);
     this.addToMap(this.statusBar);
+    this.bottleStatusBar.draw(this.ctx, this.character.bottles);
+    this.coinStatusBar.draw(this.ctx, this.character.coins);
     this.ctx.translate(this.camera_x, 0);
     this.addToMap(this.character);
+    this.addObjectsToMap(this.level.bottles);
+    this.addObjectsToMap(this.level.coins);
     this.addObjectsToMap(this.level.enemies);
     this.addObjectsToMap(this.throwableObjects);
 

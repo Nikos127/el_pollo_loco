@@ -39,6 +39,7 @@ function setStoppableInterval(fn, time) {
 
 function stopGame() {
   intervalIds.forEach(clearInterval);
+  intervalIds = [];
 }
 
 function init() {

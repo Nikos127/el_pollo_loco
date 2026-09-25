@@ -2,6 +2,8 @@ class Level {
   enemies;
   clouds;
   backgroundObjects;
+  bottles = [];
+  coins = [];
   level_end_x = 4000;
 
   constructor(enemies, clouds, backgroundObjects) {
@@ -9,6 +11,27 @@ class Level {
     this.clouds = clouds;
     this.backgroundObjects = backgroundObjects;
     this.createBackgroundObjects();
+    this.createBottles();
+    this.createCoins();
+  }
+
+  createBottles() {
+    for (let i = 0; i < 24; i++) {
+      const x = 350 + i * 150;
+      const variant = (i % 2) + 1;
+      this.bottles.push(new Bottle(x, variant));
+    }
+  }
+
+  createCoins() {
+    const heights = [340, 240, 160];
+
+    for (let x = 450; x < this.level_end_x - 150; ) {
+      const index = Math.floor(Math.random() * heights.length);
+      this.coins.push(new Coin(x, heights[index]));
+
+      x += 180 + Math.floor(Math.random() * 181);
+    }
   }
 
   createBackgroundObjects() {
