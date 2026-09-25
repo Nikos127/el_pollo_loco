@@ -41,7 +41,8 @@ h1 {
   padding-top: 24px;
 }
 
-#startscreen button {
+#startscreen button,
+#restart-button {
   padding: 12px 24px;
   font-size: 26px;
   font-weight: bold;
@@ -108,4 +109,11 @@ canvas {
 .music-button[aria-presset='true'] {
   background-color: #ffe08a;
   box-shadow: inset 0 0 0 2px #803300;
+}
+
+#restart-button {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translate(-50%);
 }

@@ -126,3 +126,15 @@ window.addEventListener('keyup', (e) => {
     keyboard.X = false;
   }
 });
+
+function restartGame() {
+  stopGame();
+  cancelAnimationFrame(world.animationFrameId);
+  world.character.walkingSound.pause();
+
+  keyboard = new Keyboard();
+  document.getElementById('restart-button').hidden = true;
+
+  initLevel();
+  init();
+}

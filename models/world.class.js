@@ -54,10 +54,6 @@ class World {
       this.showWinScreen = true;
       stopGame();
       new Audio('audio/won.mp3').play();
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
     }, 1000);
   }
 
@@ -159,6 +155,7 @@ class World {
       this.gameOverScreen.img =
         this.gameOverScreen.imageCache[this.gameOverScreen.IMAGES_WON[0]];
       this.addToMap(this.gameOverScreen);
+      document.getElementById('restart-button').hidden = false;
     }
     if (this.character.isDead() && !this.hasWon) {
       let timeSinceDead = new Date().getTime() - this.character.timeOfDeath;
@@ -166,6 +163,7 @@ class World {
         this.gameOverScreen.img =
           this.gameOverScreen.imageCache[this.gameOverScreen.IMAGES_LOST[1]];
         this.addToMap(this.gameOverScreen);
+        document.getElementById('restart-button').hidden = false;
       } else if (timeSinceDead >= 2000) {
         this.addToMap(this.gameOverScreen);
       } else {
@@ -174,7 +172,7 @@ class World {
     }
 
     let self = this;
-    requestAnimationFrame(function () {
+    this.animationFrameId = requestAnimationFrame(function () {
       self.draw();
     });
   }
