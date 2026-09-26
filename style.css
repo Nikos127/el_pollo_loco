@@ -20,6 +20,7 @@ h1 {
   font-family: patterns_and_dots, sans-serif;
   font-size: 3rem;
   text-shadow: 4px 2px 8px rgba(0, 0, 0, 0.5);
+  text-align: center;
 }
 
 #fullscreen {
@@ -65,17 +66,6 @@ canvas {
   object-fit: contain;
 }
 
-@media only screen and (max-width: 720px) {
-  canvas {
-    width: 100%;
-  }
-
-  @media only screen and (max-height: 480px) {
-    canvas {
-      height: 100vh;
-    }
-  }
-}
 .fullscreen-button {
   position: absolute;
   right: 16px;
@@ -116,4 +106,68 @@ canvas {
   bottom: 80px;
   left: 50%;
   transform: translate(-50%);
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 720px) {
+  canvas {
+    width: 100%;
+  }
+
+  @media only screen and (max-height: 480px) {
+    canvas {
+      height: 100vh;
+    }
+  }
+}
+
+@media only screen and (max-width: 720px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  #startscreen button,
+  #restart-button {
+    padding: 8px 16px;
+    font-size: 20px;
+  }
+
+  .fullscreen-button {
+    width: 36px;
+    height: 36px;
+    font-size: 22px;
+    right: 12px;
+  }
+
+  .music-button {
+    right: 60px;
+  }
+}
+
+@media only screen and (max-width: 480px) {
+  #startscreen {
+    padding-top: 12px;
+  }
+
+  #startscreen button,
+  #restart-button {
+    padding: 6px 12px;
+    font-size: 16px;
+  }
+
+  .fullscreen-button {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .music-button {
+    right: 48px;
+  }
+
+  #restart-button {
+    bottom: 48px;
+  }
 }
