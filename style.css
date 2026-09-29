@@ -109,6 +109,69 @@ canvas {
   white-space: nowrap;
 }
 
+.controls-help {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  z-index: 3;
+  font-family: Arial, sans-serif;
+  color: #803300;
+}
+
+.controls-help summary {
+  padding: 8px 12px;
+  background-color: orange;
+  border: 2px solid #803300;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  list-style: none;
+}
+
+.controls-help summary::webkit-details-marker {
+  display: none;
+}
+
+.controls-help summary:hover {
+  background-color: #ffbf47;
+}
+
+.controls-help summary:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
+.controls-panel {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 8px);
+  width: 240px;
+  max-width: calc(100vw - 48px);
+  box-sizing: border-box;
+  padding: 16px;
+  background-color: #fff3d6;
+  border: 2px solid #803300;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.controls-panel p {
+  margin: 12px 0 0;
+}
+
+.controls-panel kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: white;
+  border: 1px solid #803300;
+  border-radius: 4px;
+}
+
+#fullscreen:not(:has(#startscreen)):has(#restart-button[hidden])
+  .controls-help {
+  display: none;
+}
+
 @media only screen and (max-width: 720px) {
   canvas {
     width: 100%;

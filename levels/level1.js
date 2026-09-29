@@ -1,29 +1,18 @@
 let level1;
 
 function initLevel() {
-  level1 = new Level(
-    [
-      Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
-      Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
-      Math.random() < 0.5 ? new Chicken() : new ChickenSmall(),
-      Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
-      Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
-      Math.random() < 0.5 ? new Chicken(1000) : new ChickenSmall(1000),
-      Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
-      Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
-      Math.random() < 0.5 ? new Chicken(1500) : new ChickenSmall(1500),
-      Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
-      Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
-      Math.random() < 0.5 ? new Chicken(2000) : new ChickenSmall(2000),
-      Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
-      Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
-      Math.random() < 0.5 ? new Chicken(2500) : new ChickenSmall(2500),
-      Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
-      Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
-      Math.random() < 0.5 ? new Chicken(3000) : new ChickenSmall(3000),
-      new Endboss(),
-    ],
-    [new Cloud()],
-    [],
-  );
+  level1 = new Level(createEnemies(), [new Cloud()], []);
+}
+
+function createEnemies() {
+  const enemies = [];
+  const positions = [undefined, 1000, 1500, 2000, 2500, 3000];
+  for (const x of positions) {
+    for (let i = 0; i < 3; i++) {
+      const enemy = Math.random() < 0.5 ? new Chicken(x) : new ChickenSmall(x);
+      enemies.push(enemy);
+    }
+  }
+  enemies.push(new Endboss());
+  return enemies;
 }
