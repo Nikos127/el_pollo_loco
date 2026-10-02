@@ -7,23 +7,39 @@ const backgroundMusic = new Audio('audio/background-music.mp3');
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.2;
 
+/**
+ * Schaltet die Hintergrundmusik um und aktualisiert den Musikbutton.
+ * @param {HTMLButtonElement} button - Button zur Musiksteuerung.
+ * @returns {Promise<void>}
+ */
 async function toggleMusic(button) {
-  if (backgroundMusic.paused) {
-    try {
+  try {
+    if (backgroundMusic.paused) {
       await backgroundMusic.play();
-    } catch (error) {
-      console.error('Music konnte nicht gestartet werden:', error);
-      return;
+    } else {
+      backgroundMusic.pause();
     }
-  } else {
-    backgroundMusic.pause();
+    updateMusicButton(button);
+  } catch (error) {
+    console.error('Musik konnte nicht umgeschaltet werden:', error);
   }
+}
 
+/**
+ * Aktualisiert den zugänglichen Zustand und Tooltip des Musikbuttons.
+ * @param {HTMLButtonElement} button - Button zur Musiksteuerung.
+ * @returns {void}
+ */
+function updateMusicButton(button) {
   const isPlaying = !backgroundMusic.paused;
-  button.setAtribute('aria-pressed', String(isPlaying));
+  button.setAttribute('aria-pressed', String(isPlaying));
   button.title = isPlaying ? 'Music ausschalten' : 'Music einschalten';
 }
 
+/**
+ * Startet das Spiel einmalig und entfernt den Startbildschirm.
+ * @returns {void}
+ */
 function startGame() {
   if (world) return;
 
@@ -32,26 +48,49 @@ function startGame() {
   document.getElementById('startscreen').remove();
 }
 
+/**
+ * Startet ein Intervall und registriert es zum späteren Stoppen.
+ * @param {function(): void} fn - Wiederholt auszuführende Funktion.
+ * @param {number} time - Intervallabstand in Millisekunden.
+ * @returns {void}
+ */
 function setStoppableInterval(fn, time) {
   let id = setInterval(fn, time);
   intervalIds.push(id);
 }
 
+/**
+ * Beendet alle registrierten Spielintervalle und leert ihre Liste.
+ * @returns {void}
+ */
 function stopGame() {
   intervalIds.forEach(clearInterval);
   intervalIds = [];
 }
 
+/**
+ * Ermittelt das Canvas und erstellt die Spielwelt.
+ * @returns {void}
+ */
 function init() {
   canvas = document.getElementById('canvas');
   world = new World(canvas, keyboard);
 }
 
+/**
+ * Fordert den Vollbildmodus für den Spielcontainer an.
+ * @returns {void}
+ */
 function fullscreen() {
   let fullscreen = document.getElementById('fullscreen');
   enterFullscreen(fullscreen);
 }
 
+/**
+ * Fordert den Vollbildmodus für das angegebene Element an.
+ * @param {HTMLElement} elem - Im Vollbild anzuzeigendes Element.
+ * @returns {void}
+ */
 function enterFullscreen(elem) {
   if (elem.requestFullscreen) {
     elem.requestFullscreen();
@@ -64,6 +103,10 @@ function enterFullscreen(elem) {
   }
 }
 
+/**
+ * Fordert das Beenden des Vollbildmodus an.
+ * @returns {void}
+ */
 function closeFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen();
@@ -76,58 +119,18 @@ function closeFullscreen() {
   }
 }
 
-window.addEventListener('keydown', (e) => {
-  if (e.keyCode == 39) {
-    keyboard.RIGHT = true;
-  }
-
-  if (e.keyCode == 37) {
-    keyboard.LEFT = true;
-  }
-
-  if (e.keyCode == 87) {
-    keyboard.W = true;
-  }
-
-  if (e.keyCode == 40) {
-    keyboard.DOWN = true;
-  }
-
-  if (e.keyCode == 32) {
-    keyboard.SPACE = true;
-  }
-
-  if (e.keyCode == 88) {
-    keyboard.X = true;
-  }
+window.addEventListener('keydown', /** Aktiviert die gedrückte Spieltaste. */ (event) => {
+  updateKeyboard(event, true);
 });
 
-window.addEventListener('keyup', (e) => {
-  if (e.keyCode == 39) {
-    keyboard.RIGHT = false;
-  }
-
-  if (e.keyCode == 37) {
-    keyboard.LEFT = false;
-  }
-
-  if (e.keyCode == 87) {
-    keyboard.W = false;
-  }
-
-  if (e.keyCode == 40) {
-    keyboard.DOWN = false;
-  }
-
-  if (e.keyCode == 32) {
-    keyboard.SPACE = false;
-  }
-
-  if (e.keyCode == 88) {
-    keyboard.X = false;
-  }
+window.addEventListener('keyup', /** Setzt die losgelassene Spieltaste zurück. */ (event) => {
+  updateKeyboard(event, false);
 });
 
+/**
+ * Stoppt das bisherige Spiel und erstellt Tastaturzustand und Spielwelt neu.
+ * @returns {void}
+ */
 function restartGame() {
   stopGame();
   cancelAnimationFrame(world.animationFrameId);
@@ -138,4 +141,25 @@ function restartGame() {
 
   initLevel();
   init();
+}
+
+/**
+ * Aktualisiert den Zustand einer unterstützten Spieltaste.
+ * @param {KeyboardEvent} event - Tastaturereignis.
+ * @param {boolean} pressed - Ob die Taste gedrückt ist.
+ * @returns {void}
+ */
+function updateKeyboard(event, pressed) {
+  const keys = {
+    39: 'RIGHT',
+    37: 'LEFT',
+    87: 'W',
+    40: 'DOWN',
+    32: 'SPACE',
+    88: 'X',
+  };
+  const key = keys[event.keyCode];
+  if (key) {
+    keyboard[key] = pressed;
+  }
 }

@@ -6,6 +6,9 @@ class GameOverScreen extends DrawableObject {
 
   IMAGES_WON = ['img/You won, you lost/You won A.png'];
 
+  /**
+   * Erstellt und initialisiert eine Instanz von GameOverScreen.
+   */
   constructor() {
     super();
     this.x = 0;

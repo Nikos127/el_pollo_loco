@@ -9,8 +9,12 @@ class MovableObject extends DrawableObject {
   timeOfDeath = 0;
   groundlevel = 165;
 
+  /**
+   * Aktualisiert Höhe und vertikale Geschwindigkeit in einem Intervall.
+   * @returns {void}
+   */
   applyGravity() {
-    setStoppableInterval(() => {
+    setStoppableInterval(/** Berechnet den nächsten Schwerkraftschritt. */ () => {
       if ((this.isAboveGround() || this.speedY > 0) && !this.splashed) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
@@ -21,6 +25,10 @@ class MovableObject extends DrawableObject {
     }, 1000 / 25);
   }
 
+  /**
+   * Prüft, ob das Objekt in der Luft ist; geworfene Flaschen gelten immer als in der Luft.
+   * @returns {boolean}
+   */
   isAboveGround() {
     if (this instanceof ThrowableObject) {
       return true;
@@ -29,32 +37,46 @@ class MovableObject extends DrawableObject {
     }
   }
 
+  /**
+   * Verringert die Energie bei einem gültigen Treffer und behandelt Verletzung oder Tod.
+   * @returns {void}
+   */
   hit() {
     if (this.isDead() || this.isHurt()) {
       return;
     }
     this.energy -= 5;
     if (this.energy <= 0) {
-      this.energy = 0;
-      this.timeOfDeath = new Date().getTime();
-      this.currentImage = 0;
-      new Audio('audio/character-die.mp3').play();
+      this.handleDeath();
     } else {
       this.lastHit = new Date().getTime();
       new Audio('audio/hurt.mp3').play();
     }
   }
 
+  /**
+   * Prüft, ob die Lebensenergie null beträgt.
+   * @returns {boolean}
+   */
   isDead() {
     return this.energy == 0;
   }
 
+  /**
+   * Prüft, ob der letzte Treffer weniger als eine halbe Sekunde zurückliegt.
+   * @returns {boolean}
+   */
   isHurt() {
     let timepassed = new Date().getTime() - this.lastHit;
     timepassed = timepassed / 1000;
     return timepassed < 0.5;
   }
 
+  /**
+   * Prüft die Überlappung der Kollisionsrechtecke beider Objekte.
+   * @param {MovableObject} mo - Zu prüfendes oder zu zeichnendes Objekt.
+   * @returns {boolean}
+   */
   isColliding(mo) {
     return (
       this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
@@ -64,14 +86,27 @@ class MovableObject extends DrawableObject {
     );
   }
 
+  /**
+   * Bewegt das Objekt um seine Geschwindigkeit nach rechts.
+   * @returns {void}
+   */
   moveRight() {
     this.x += this.speed;
   }
 
+  /**
+   * Bewegt das Objekt um seine Geschwindigkeit nach links.
+   * @returns {void}
+   */
   moveLeft() {
     this.x -= this.speed;
   }
 
+  /**
+   * Zeigt das nächste Bild einer zyklisch wiederholten Animation.
+   * @param {string[]} images - Pfade der Animationsbilder.
+   * @returns {void}
+   */
   playAnimation(images) {
     let i = this.currentImage % images.length;
     let path = images[i];
@@ -79,10 +114,26 @@ class MovableObject extends DrawableObject {
     this.currentImage++;
   }
 
+  /**
+   * Zeigt das nächste Animationsbild und bleibt anschließend beim letzten Bild.
+   * @param {string[]} images - Pfade der Animationsbilder.
+   * @returns {void}
+   */
   playAnimationOnce(images) {
     let i = Math.min(this.currentImage, images.length - 1);
     let path = images[i];
     this.img = this.imageCache[path];
     this.currentImage++;
+  }
+
+  /**
+   * Setzt den Todeszustand, merkt den Zeitpunkt und spielt den Todeston.
+   * @returns {void}
+   */
+  handleDeath() {
+    this.energy = 0;
+    this.timeOfDeath = new Date().getTime();
+    this.currentImage = 0;
+    new Audio('audio/character-die.mp3').play();
   }
 }

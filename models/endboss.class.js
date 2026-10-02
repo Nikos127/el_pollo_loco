@@ -51,6 +51,9 @@ class Endboss extends MovableObject {
     'img/4_enemie_boss_chicken/5_dead/G26.png',
   ];
 
+  /**
+   * Erstellt und initialisiert eine Instanz von Endboss.
+   */
   constructor() {
     super().loadImage(this.IMAGES_ALERT[0]);
     this.loadImages(this.IMAGES_ALERT);
@@ -61,61 +64,30 @@ class Endboss extends MovableObject {
     this.animate();
   }
 
+  /**
+   * Startet die Intervalle für Bewegung und Animation.
+   * @returns {void}
+   */
   animate() {
-    setStoppableInterval(() => {
-      this.updateMovement();
-    }, 1000 / 60);
-
-    setStoppableInterval(() => {
-      if (this.dead) {
-        this.playAnimationOnce(this.IMAGES_DEAD);
-        return;
-      }
-
-      const nextState = !this.activated
-        ? 'alert'
-        : this.attacking
-          ? 'attack'
-          : 'walk';
-
-      if (this.animationState !== nextState) {
-        this.currentImage = 0;
-        this.animationState = nextState;
-      }
-
-      const images = {
-        alert: this.IMAGES_ALERT,
-        walk: this.IMAGES_WALKING,
-        attack: this.IMAGES_ATTACK,
-      };
-
-      this.playAnimation(images[nextState]);
-    }, 200);
+    setStoppableInterval(/** Aktualisiert die Bewegung im Intervall. */ () => this.updateMovement(), 1000 / 60);
+    setStoppableInterval(/** Aktualisiert die Animation im Intervall. */ () => this.updateAnimation(), 200);
   }
 
+  /**
+   * Aktiviert den sichtbaren Boss und aktualisiert seine Verfolgung.
+   * @returns {void}
+   */
   updateMovement() {
     if (!this.world || this.dead || this.world.character.isDead()) return;
-
-    const screenX = this.x + this.world.camera_x;
-
-    if (screenX < this.world.canvas.width && screenX + this.width > 0) {
-      this.activated = true;
-    }
-
+    this.activateWhenVisible();
     if (!this.activated) return;
-
-    const pepe = this.world.character;
-    const distance = pepe.x + pepe.width / 2 - (this.x + this.width / 2);
-
-    this.attacking = Math.abs(distance) < 250;
-    this.speed = this.attacking ? 4 : 2;
-
-    if (distance !== 0) {
-      this.otherDirection = distance > 0;
-      this.x += Math.sign(distance) * Math.min(this.speed, Math.abs(distance));
-    }
+    this.followCharacter();
   }
 
+  /**
+   * Zählt einen Flaschentreffer und setzt beim letzten Treffer den Todeszustand.
+   * @returns {void}
+   */
   hit() {
     if (this.dead) return;
     this.hits++;
@@ -124,5 +96,67 @@ class Endboss extends MovableObject {
       this.dead = true;
       this.currentImage = 0;
     }
+  }
+
+  /**
+   * Aktiviert den Boss dauerhaft, sobald er in den sichtbaren Bereich gelangt.
+   * @returns {void}
+   */
+  activateWhenVisible() {
+    const screenX = this.x + this.world.camera_x;
+    if (screenX < this.world.canvas.width && screenX + this.width > 0) {
+      this.activated = true;
+    }
+  }
+
+  /**
+   * Bewegt den Boss auf die Spielfigur zu und bestimmt sein Angriffstempo.
+   * @returns {void}
+   */
+  followCharacter() {
+    const pepe = this.world.character;
+    const distance = pepe.x + pepe.width / 2 - (this.x + this.width / 2);
+
+    this.attacking = Math.abs(distance) < 250;
+    this.speed = this.attacking ? 4 : 2;
+    if (distance !== 0) {
+      this.otherDirection = distance > 0;
+      this.x += Math.sign(distance) * Math.min(this.speed, Math.abs(distance));
+    }
+  }
+
+  /**
+   * Wählt die Todesanimation oder den aktuellen Animationszustand des Bosses.
+   * @returns {void}
+   */
+  updateAnimation() {
+    if (this.dead) {
+      this.playAnimationOnce(this.IMAGES_DEAD);
+      return;
+    }
+    const nextState = !this.activated
+      ? 'alert'
+      : this.attacking
+        ? 'attack'
+        : 'walk';
+    this.playStateAnimation(nextState);
+  }
+
+  /**
+   * Setzt bei einem Zustandswechsel den Bildzähler zurück und animiert den Boss.
+   * @param {'alert'|'walk'|'attack'} nextState - Nächster Animationszustand.
+   * @returns {void}
+   */
+  playStateAnimation(nextState) {
+    if (this.animationState !== nextState) {
+      this.currentImage = 0;
+      this.animationState = nextState;
+    }
+    const images = {
+      alert: this.IMAGES_ALERT,
+      walk: this.IMAGES_WALKING,
+      attack: this.IMAGES_ATTACK,
+    };
+    this.playAnimation(images[nextState]);
   }
 }

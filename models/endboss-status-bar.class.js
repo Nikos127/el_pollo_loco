@@ -8,6 +8,9 @@ class EndbossStatusBar extends DrawableObject {
     'img/7_statusbars/2_statusbar_endboss/green/green100.png',
   ];
 
+  /**
+   * Erstellt und initialisiert eine Instanz von EndbossStatusBar.
+   */
   constructor() {
     super();
     this.x = 480;
@@ -18,6 +21,11 @@ class EndbossStatusBar extends DrawableObject {
     this.setPercentage(100);
   }
 
+  /**
+   * Aktualisiert das Bild der Lebensanzeige anhand des Energiewerts.
+   * @param {number} persentage - Lebensenergie in Prozent.
+   * @returns {void}
+   */
   setPercentage(persentage) {
     const value = Math.max(0, Math.min(100, persentage));
     const index = Math.ceil(value / 20);
