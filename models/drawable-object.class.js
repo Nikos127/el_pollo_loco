@@ -8,8 +8,8 @@ class DrawableObject {
   currentImage = 0;
 
   /**
-   * Lädt ein einzelnes Bild als aktuelles Objektbild.
-   * @param {string} path - Pfad zum Bild.
+   * Loads a single image as the current object image.
+   * @param {string} path - The image path.
    * @returns {void}
    */
   loadImage(path) {
@@ -18,8 +18,8 @@ class DrawableObject {
   }
 
   /**
-   * Zeichnet das Objekt auf die Zeichenfläche.
-   * @param {CanvasRenderingContext2D} ctx - 2D-Zeichenkontext.
+   * Draws the object on the canvas.
+   * @param {CanvasRenderingContext2D} ctx - The 2D drawing context.
    * @returns {void}
    */
   draw(ctx) {
@@ -27,12 +27,12 @@ class DrawableObject {
   }
 
   /**
-   * Lädt die angegebenen Bilder in den Bildcache.
-   * @param {string[]} arr - Zu ladende Bildpfade.
+   * Loads the supplied image paths into the image cache.
+   * @param {string[]} arr - Image paths to load.
    * @returns {void}
    */
   loadImages(arr) {
-    arr.forEach(/** Lädt einen Bildpfad in den Cache. */ (path) => {
+    arr.forEach(/** Loads an image path into the cache. */ (path) => {
       let img = new Image();
       img.src = path;
       this.imageCache[path] = img;

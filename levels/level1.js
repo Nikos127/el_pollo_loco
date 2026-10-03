@@ -1,7 +1,7 @@
 let level1;
 
 /**
- * Erstellt das erste Level mit Gegnern, Wolke und Hintergrund.
+ * Creates the first level with enemies, a cloud, and background objects.
  * @returns {void}
  */
 function initLevel() {
@@ -9,7 +9,7 @@ function initLevel() {
 }
 
 /**
- * Erstellt zufällig ausgewählte Hühner und fügt den Endboss hinzu.
+ * Creates randomly selected chickens and appends the endboss.
  * @returns {Array<Chicken|Endboss>}
  */
 function createEnemies() {

@@ -172,6 +172,14 @@ canvas {
   display: none;
 }
 
+.pause-button {
+  right: 128px;
+}
+
+.pause-button[hidden] {
+  display: none;
+}
+
 @media only screen and (max-width: 720px) {
   canvas {
     width: 100%;
@@ -205,6 +213,10 @@ canvas {
   .music-button {
     right: 60px;
   }
+
+  .pause-button {
+    right: 108px;
+  }
 }
 
 @media only screen and (max-width: 480px) {
@@ -232,5 +244,9 @@ canvas {
 
   #restart-button {
     bottom: 48px;
+  }
+
+  .pause-button {
+    right: 88px;
   }
 }

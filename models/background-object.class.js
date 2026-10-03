@@ -3,10 +3,10 @@ class BackgroundObject extends MovableObject {
   height = 480;
 
   /**
-   * Erstellt und initialisiert eine Instanz von BackgroundObject.
-   * @param {string} imagePath - Pfad zum Bild.
-   * @param {number} x - Horizontale Position in Pixeln.
-   * @param {number} [y] - Derzeit unbenutzt; die Höhe wird am Boden ausgerichtet.
+   * Creates and initializes a BackgroundObject instance.
+   * @param {string} imagePath - The image path.
+   * @param {number} x - Horizontal position in pixels.
+   * @param {number} [y] - Currently unused; the object is aligned with the ground.
    */
   constructor(imagePath, x, y) {
     super().loadImage(imagePath);

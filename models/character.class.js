@@ -55,7 +55,7 @@ class Character extends MovableObject {
   walkingSound = new Audio('audio/walking.mp3');
 
   /**
-   * Erstellt und initialisiert eine Instanz von Character.
+   * Creates and initializes a Character instance.
    */
   constructor() {
     super().loadImage('img/2_character_pepe/2_walk/W-21.png');
@@ -70,16 +70,23 @@ class Character extends MovableObject {
   }
 
   /**
-   * Startet die Intervalle für Bewegung und Animation.
+   * Starts the movement and animation intervals.
    * @returns {void}
    */
   animate() {
-    setStoppableInterval(/** Aktualisiert die Bewegung im Intervall. */ () => this.moveCharacter(), 1000 / 60);
-    setStoppableInterval(/** Aktualisiert die Animation im Intervall. */ () => this.playCharacterAnimation(), 50);
+    setStoppableInterval(
+      /** Updates movement on each interval tick. */ () => this.moveCharacter(),
+      1000 / 60,
+    );
+    setStoppableInterval(
+      /** Updates animation on each interval tick. */ () =>
+        this.playCharacterAnimation(),
+      50,
+    );
   }
 
   /**
-   * Verarbeitet Bewegungs- und Sprungtasten und aktualisiert die Kamera.
+   * Processes movement and jump input and updates the camera.
    * @returns {void}
    */
   moveCharacter() {
@@ -91,7 +98,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Prüft die rechte Richtungstaste und die rechte Levelgrenze.
+   * Checks the right key and the right level boundary.
    * @returns {boolean|undefined}
    */
   canMoveRight() {
@@ -99,7 +106,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Bewegt das Objekt um seine Geschwindigkeit nach rechts.
+   * Moves the object to the right by its current speed.
    * @returns {void}
    */
   moveRight() {
@@ -108,7 +115,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Prüft die linke Richtungstaste und die linke Levelgrenze.
+   * Checks the left key and the left level boundary.
    * @returns {boolean|undefined}
    */
   canMoveLeft() {
@@ -116,7 +123,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Bewegt das Objekt um seine Geschwindigkeit nach links.
+   * Moves the object to the left by its current speed.
    * @returns {void}
    */
   moveLeft() {
@@ -125,7 +132,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Prüft die Sprungtaste und den Bodenkontakt.
+   * Checks the jump key and whether the character is on the ground.
    * @returns {boolean|undefined}
    */
   canJump() {
@@ -133,8 +140,8 @@ class Character extends MovableObject {
   }
 
   /**
-   * Setzt die vertikale Sprunggeschwindigkeit und spielt den Sprungton.
-   * @param {number} [strength=30] - Anfängliche vertikale Sprunggeschwindigkeit.
+   * Sets the initial vertical jump speed and plays the jump sound.
+   * @param {number} [strength=30] - Initial vertical jump speed.
    * @returns {void}
    */
   jump(strength = 30) {
@@ -143,26 +150,25 @@ class Character extends MovableObject {
   }
 
   /**
-   * Prüft, ob die fallende Spielfigur einen Gegner von oben trifft.
-   * @param {Chicken|Endboss} enemy - Zu prüfender oder getroffener Gegner.
+   * Checks whether the falling character hits an enemy from above.
+   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
    * @returns {boolean}
    */
   isAboveEnemy(enemy) {
-    if (
-      this.speedY <= 0 &&
-      this.y + this.height >= enemy.y &&
-      this.y + this.height <= enemy.y + enemy.height / 2 &&
-      this.x + this.width > enemy.x &&
-      this.x < enemy.x + enemy.width
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    const feet = this.y + this.height - this.offset.bottom;
+    const previousFeet = this.previousY + this.height - this.offset.bottom;
+    const enemyTop = enemy.y + enemy.offset.top;
+    return (
+      this.speedY < 0 &&
+      previousFeet <= enemyTop &&
+      feet >= enemyTop &&
+      this.x + this.width - this.offset.right > enemy.x + enemy.offset.left &&
+      this.x + this.offset.left < enemy.x + enemy.width - enemy.offset.right
+    );
   }
 
   /**
-   * Wählt die Animation der Spielfigur und steuert das Laufgeräusch.
+   * Selects the character animation and controls walking audio.
    * @returns {void}
    */
   playCharacterAnimation() {
@@ -180,7 +186,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Spielt die verzögerte Todesanimation und beendet nach zwei Sekunden die Spielintervalle.
+   * Plays the delayed death animation and stops game intervals after two seconds.
    * @returns {void}
    */
   playDeathAnimation() {
@@ -189,7 +195,7 @@ class Character extends MovableObject {
     if (this.DeathAnimationDelay % 6 === 0) {
       this.playAnimationOnce(this.IMAGES_DEAD);
     }
-    let timeSinceDeath = new Date().getTime() - this.timeOfDeath;
+    let timeSinceDeath = getGameTime() - this.timeOfDeath;
     if (timeSinceDeath >= 2000) {
       stopGame();
       new Audio('audio/lost.mp3').play();

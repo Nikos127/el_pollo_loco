@@ -9,7 +9,7 @@ class EndbossStatusBar extends DrawableObject {
   ];
 
   /**
-   * Erstellt und initialisiert eine Instanz von EndbossStatusBar.
+   * Creates and initializes a EndbossStatusBar instance.
    */
   constructor() {
     super();
@@ -22,8 +22,8 @@ class EndbossStatusBar extends DrawableObject {
   }
 
   /**
-   * Aktualisiert das Bild der Lebensanzeige anhand des Energiewerts.
-   * @param {number} persentage - Lebensenergie in Prozent.
+   * Updates the health bar image for the supplied percentage.
+   * @param {number} persentage - Health as a percentage.
    * @returns {void}
    */
   setPercentage(persentage) {

@@ -20,8 +20,8 @@ class Chicken extends MovableObject {
   IMAGES_DEAD = ['img/3_enemies_chicken/chicken_normal/2_dead/dead.png'];
 
   /**
-   * Erstellt und initialisiert eine Instanz von Chicken.
-   * @param {number} [x] - Horizontale Position in Pixeln.
+   * Creates and initializes a Chicken instance.
+   * @param {number} [x] - Horizontal position in pixels.
    */
   constructor(x) {
     super().loadImage('img/3_enemies_chicken/chicken_normal/1_walk/1_w.png');
@@ -32,14 +32,14 @@ class Chicken extends MovableObject {
   }
 
   /**
-   * Startet die Intervalle für Bewegung und Animation.
+   * Starts the movement and animation intervals.
    * @returns {void}
    */
   animate() {
-    setStoppableInterval(/** Aktualisiert die Bewegung im Intervall. */ () => {
+    setStoppableInterval(/** Updates movement on each interval tick. */ () => {
       if (!this.dead) this.moveLeft();
     }, 1000 / 60);
-    setStoppableInterval(/** Aktualisiert die Animation im Intervall. */ () => {
+    setStoppableInterval(/** Updates animation on each interval tick. */ () => {
       if (!this.dead) this.playAnimation(this.IMAGES_WALKING);
     }, 200);
   }

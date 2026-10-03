@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>El Pollo Loco</title>
     <link rel="stylesheet" href="./style.css" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="./img/6_salsa_bottle/salsa_bottle.png"
+    />
 
     <script src="./models/drawable-object.class.js"></script>
     <script src="./models/movable-object.class.js"></script>
@@ -61,6 +66,19 @@
         ♪
       </button>
 
+      <button
+        id="pause-button"
+        type="button"
+        class="fullscreen-button pause-button"
+        onclick="togglePause()"
+        aria-pressed="false"
+        aria-label="Spiel pausieren"
+        title="Spiel pausieren"
+        hidden
+      >
+        &#10074;&#10074;
+      </button>
+
       <details class="controls-help">
         <summary>Steuerung</summary>
         <div class="controls-panel">
@@ -69,8 +87,28 @@
           <p><kbd>→</kbd> Nach rechts laufen</p>
           <p><kbd>W</kbd> Springen</p>
           <p><kbd>Leertaste</kbd> Flasche werfen</p>
+          <p><kbd>P</kbd> Pause / Fortsetzen</p>
         </div>
       </details>
+      <div class="mobile-controls">
+        <div class="mobile-controls-group">
+          <button type="button" data-key="LEFT" aria-label="Nach links">
+            &#8592;
+          </button>
+          <button type="button" data-key="RIGHT" aria-label="Nach rechts">
+            &#8594;
+          </button>
+        </div>
+
+        <div class="mobile-controls-group">
+          <button type="button" data-key="W" aria-label="Springen">
+            &#8593;
+          </button>
+          <button type="button" data-key="SPACE" aria-label="Flasche werfen">
+            Wurf
+          </button>
+        </div>
+      </div>
     </div>
   </body>
 </html>

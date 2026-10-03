@@ -16,8 +16,8 @@ class World {
   showWinScreen = false;
 
   /**
-   * Erstellt und initialisiert eine Instanz von World.
-   * @param {HTMLCanvasElement} canvas - Zeichenfläche des Spiels.
+   * Creates and initializes a World instance.
+   * @param {HTMLCanvasElement} canvas - The game canvas.
    */
   constructor(canvas) {
     this.ctx = canvas.getContext('2d');
@@ -29,57 +29,71 @@ class World {
   }
 
   /**
-   * Verknüpft die Spielfigur und den Endboss mit dieser Spielwelt.
+   * Links the character and endboss to this world.
    * @returns {void}
    */
   setWorld() {
     this.character.world = this;
-    this.level.enemies.forEach(/** Verknüpft den Endboss mit der Spielwelt. */ (enemy) => {
-      if (enemy instanceof Endboss) {
-        enemy.world = this;
-      }
-    });
+    this.level.enemies.forEach(
+      /** Links the endboss to the game world. */ (enemy) => {
+        if (enemy instanceof Endboss) {
+          enemy.world = this;
+        }
+      },
+    );
   }
 
   /**
-   * Startet die Intervalle für Kollisionen, Sammelobjekte, Sieg und Würfe.
+   * Starts the intervals for collisions, collectibles, victory checks, and throws.
    * @returns {void}
    */
   run() {
-    setStoppableInterval(/** Prüft Kollisionen, Sieg und Sammelobjekte. */ () => {
-      this.checkCollidions();
-      this.checkWin();
-      this.checkBottleCollection();
-      this.checkCoinCollection();
-    }, 1000 / 25);
-    setStoppableInterval(/** Prüft den nächsten Flaschenwurf. */ () => {
-      this.checkThrowObjects();
-    }, 200);
+    setStoppableInterval(
+      /** Updates the world. */ () => {
+        this.updateWorld();
+      },
+      1000 / 25,
+    );
+    setStoppableInterval(
+      /** Checks bottle throws. */ () => {
+        this.checkThrowObjects();
+      },
+      200,
+    );
   }
 
   /**
-   * Erkennt den besiegten Endboss und plant den Siegbildschirm.
+   * Detects a defeated endboss and schedules the victory screen.
    * @returns {void}
    */
   checkWin() {
     if (this.hasWon || this.character.isDead()) return;
-    const boss = this.level.enemies.find(/** Prüft, ob das gesuchte Objekt übereinstimmt. */ (enemy) => enemy instanceof Endboss);
+    const boss = this.level.enemies.find(
+      /** Checks whether the object matches the search. */ (enemy) =>
+        enemy instanceof Endboss,
+    );
     if (!boss || !boss.dead) return;
     this.hasWon = true;
-    setTimeout(/** Schließt den Sieg nach der Wartezeit ab. */ () => this.finishWin(), 1000);
+    setTimeout(
+      /** Completes the victory sequence after the delay. */ () =>
+        this.finishWin(),
+      1000,
+    );
   }
 
   /**
-   * Wirft bei gedrückter Leertaste eine verfügbare Flasche.
+   * Throws an available bottle while the space key is pressed.
    * @returns {void}
    */
   checkThrowObjects() {
-    if (this.hasWon || this.character.isDead()) return;
+    if (this.hasWon || this.character.isDead() || this.character.isHurt())
+      return;
     if (!this.keyboard.SPACE || this.character.bottles <= 0) return;
 
     const bottle = new ThrowableObject(
-      this.character.x + 100,
+      this.character.x + (this.character.otherDirection ? 0 : 100),
       this.character.y + 100,
+      this.character.otherDirection,
     );
 
     this.throwableObjects.push(bottle);
@@ -88,64 +102,73 @@ class World {
   }
 
   /**
-   * Sammelt berührte Flaschen ein und entfernt sie aus dem Level.
+   * Collects overlapping bottles and removes them from the level.
    * @returns {void}
    */
   checkBottleCollection() {
     if (this.hasWon || this.character.isDead()) return;
 
-    this.level.bottles = this.level.bottles.filter(/** Prüft, ob das Objekt in der Liste verbleiben soll. */ (bottle) => {
-      if (this.character.isColliding(bottle)) {
-        this.character.bottles++;
-        return false;
-      }
+    this.level.bottles = this.level.bottles.filter(
+      /** Checks whether the object should remain in the list. */ (bottle) => {
+        if (this.character.isColliding(bottle)) {
+          this.character.bottles++;
+          return false;
+        }
 
-      return true;
-    });
+        return true;
+      },
+    );
   }
 
   /**
-   * Sammelt berührte Münzen ein und entfernt sie aus dem Level.
+   * Collects overlapping coins and removes them from the level.
    * @returns {void}
    */
   checkCoinCollection() {
     if (this.hasWon || this.character.isDead()) return;
 
-    this.level.coins = this.level.coins.filter(/** Prüft, ob das Objekt in der Liste verbleiben soll. */ (coin) => {
-      if (this.character.isColliding(coin)) {
-        this.character.coins++;
-        return false;
-      }
-      return true;
-    });
-  }
-
-  /**
-   * Prüft Gegnerkontakte und Flaschentreffer für alle Gegner.
-   * @returns {void}
-   */
-  checkCollidions() {
-    if (this.hasWon) return;
-    this.level.enemies.forEach(/** Behandelt Spielfigurkontakt und Flaschentreffer für diesen Gegner. */ (enemy) => {
-      const bottle = this.isBottleHit(enemy);
-      this.checkCharacterCollision(enemy);
-      this.handleBottleHit(enemy, bottle);
-    });
-  }
-
-  /**
-   * Sucht eine noch nicht zerplatzte Flasche, die das Ziel berührt.
-   * @param {MovableObject} mo - Zu prüfendes oder zu zeichnendes Objekt.
-   * @returns {ThrowableObject|undefined}
-   */
-  isBottleHit(mo) {
-    return this.throwableObjects.find(
-      /** Prüft, ob das gesuchte Objekt übereinstimmt. */ (bottle) => !bottle.splashed && bottle.isColliding(mo),
+    this.level.coins = this.level.coins.filter(
+      /** Checks whether the object should remain in the list. */ (coin) => {
+        if (this.character.isColliding(coin)) {
+          this.character.coins++;
+          return false;
+        }
+        return true;
+      },
     );
   }
 
   /**
-   * Zeichnet einen vollständigen Frame und plant den nächsten.
+   * Checks character collisions and bottle hits for every enemy.
+   * @returns {void}
+   */
+  checkCollidions() {
+    if (this.hasWon) return;
+    this.level.enemies.forEach(
+      /** Handles character contact and bottle hits for this enemy. */ (
+        enemy,
+      ) => {
+        const bottle = this.isBottleHit(enemy);
+        this.checkCharacterCollision(enemy);
+        this.handleBottleHit(enemy, bottle);
+      },
+    );
+  }
+
+  /**
+   * Finds an unsplashed bottle that overlaps the target.
+   * @param {MovableObject} mo - The target object.
+   * @returns {ThrowableObject|undefined}
+   */
+  isBottleHit(mo) {
+    return this.throwableObjects.find(
+      /** Checks whether the object matches the search. */ (bottle) =>
+        !bottle.splashed && bottle.isColliding(mo),
+    );
+  }
+
+  /**
+   * Draws a complete frame and schedules the next one.
    * @returns {void}
    */
   draw() {
@@ -156,23 +179,27 @@ class World {
     this.drawEndbossStatusBar();
     this.drawWinScreen();
     this.drawLossScreen();
-    this.animationFrameId = requestAnimationFrame(/** Zeichnet den nächsten Frame. */ () => this.draw());
+    this.animationFrameId = requestAnimationFrame(
+      /** Draws the next frame. */ () => this.draw(),
+    );
   }
 
   /**
-   * Zeichnet alle übergebenen Objekte.
-   * @param {DrawableObject[]} objects - Zu zeichnende Objekte.
+   * Draws all objects in the supplied list.
+   * @param {DrawableObject[]} objects - Objects to draw.
    * @returns {void}
    */
   addObjectsToMap(objects) {
-    objects.forEach(/** Zeichnet das aktuelle Objekt. */ (o) => {
-      this.addToMap(o);
-    });
+    objects.forEach(
+      /** Draws the current object. */ (o) => {
+        this.addToMap(o);
+      },
+    );
   }
 
   /**
-   * Zeichnet ein Objekt mit seiner aktuellen Blickrichtung.
-   * @param {MovableObject} mo - Zu prüfendes oder zu zeichnendes Objekt.
+   * Draws an object in its current facing direction.
+   * @param {DrawableObject} mo - The object to draw or mirror.
    * @returns {void}
    */
   addToMap(mo) {
@@ -188,8 +215,8 @@ class World {
   }
 
   /**
-   * Spiegelt den Zeichenkontext und die horizontale Objektposition.
-   * @param {MovableObject} mo - Zu prüfendes oder zu zeichnendes Objekt.
+   * Mirrors the drawing context and the horizontal object position.
+   * @param {DrawableObject} mo - The object to draw or mirror.
    * @returns {void}
    */
   flipImage(mo) {
@@ -200,8 +227,8 @@ class World {
   }
 
   /**
-   * Stellt Objektposition und Zeichenkontext nach dem Spiegeln wieder her.
-   * @param {MovableObject} mo - Zu prüfendes oder zu zeichnendes Objekt.
+   * Restores the object position and drawing context after mirroring.
+   * @param {DrawableObject} mo - The object to draw or mirror.
    * @returns {void}
    */
   flipImageBack(mo) {
@@ -210,7 +237,7 @@ class World {
   }
 
   /**
-   * Zeichnet Hintergrund und Wolken mit Kameraverschiebung.
+   * Draws the background and clouds with the camera offset.
    * @returns {void}
    */
   drawBackground() {
@@ -221,7 +248,7 @@ class World {
   }
 
   /**
-   * Zeichnet Lebensenergie sowie Flaschen- und Münzanzahl.
+   * Draws health, bottle count, and coin count.
    * @returns {void}
    */
   drawStatusBars() {
@@ -231,7 +258,7 @@ class World {
   }
 
   /**
-   * Zeichnet Spielfigur, Sammelobjekte, Gegner und geworfene Flaschen.
+   * Draws the character, collectibles, enemies, and thrown bottles.
    * @returns {void}
    */
   drawGameObjects() {
@@ -245,11 +272,14 @@ class World {
   }
 
   /**
-   * Zeichnet die Boss-Lebensanzeige, wenn der Boss im Bild liegt.
+   * Draws the health bar while the endboss is on screen.
    * @returns {void}
    */
   drawEndbossStatusBar() {
-    const boss = this.level.enemies.find(/** Prüft, ob das gesuchte Objekt übereinstimmt. */ (enemy) => enemy instanceof Endboss);
+    const boss = this.level.enemies.find(
+      /** Checks whether the object matches the search. */ (enemy) =>
+        enemy instanceof Endboss,
+    );
     if (
       boss &&
       boss.x + this.camera_x < this.canvas.width &&
@@ -260,7 +290,7 @@ class World {
   }
 
   /**
-   * Zeichnet bei freigegebenem Sieg den Endbildschirm und zeigt den Neustartbutton.
+   * Displays the victory screen and restart button when victory is ready.
    * @returns {void}
    */
   drawWinScreen() {
@@ -273,12 +303,12 @@ class World {
   }
 
   /**
-   * Zeichnet nach dem Tod zeitversetzt die Niederlagenbilder.
+   * Displays the defeat screens after the respective death delays.
    * @returns {void}
    */
   drawLossScreen() {
     if (!this.character.isDead() || this.hasWon) return;
-    const timeSinceDead = new Date().getTime() - this.character.timeOfDeath;
+    const timeSinceDead = getGameTime() - this.character.timeOfDeath;
     if (timeSinceDead >= 3500) {
       this.gameOverScreen.img =
         this.gameOverScreen.imageCache[this.gameOverScreen.IMAGES_LOST[1]];
@@ -290,8 +320,8 @@ class World {
   }
 
   /**
-   * Behandelt Draufspringen auf Hühner und schädlichen Gegnerkontakt.
-   * @param {Chicken|Endboss} enemy - Zu prüfender oder getroffener Gegner.
+   * Handles stomping on chickens and damage from enemy contact.
+   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
    * @returns {void}
    */
   checkCharacterCollision(enemy) {
@@ -308,8 +338,8 @@ class World {
   }
 
   /**
-   * Tötet ein übersprungenes Huhn und lässt die Spielfigur abprallen.
-   * @param {Chicken|Endboss} enemy - Zu prüfender oder getroffener Gegner.
+   * Kills a stomped chicken and makes the character bounce.
+   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
    * @returns {void}
    */
   squashEnemy(enemy) {
@@ -324,29 +354,33 @@ class World {
   }
 
   /**
-   * Entfernt einen Gegner nach 1500 Millisekunden aus dem Level.
-   * @param {Chicken|Endboss} enemy - Zu prüfender oder getroffener Gegner.
+   * Removes an enemy from the level after 1500 milliseconds.
+   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
    * @returns {void}
    */
   removeEnemyLater(enemy) {
-    setTimeout(/** Entfernt den Gegner nach der Wartezeit. */ () => {
-      this.level.enemies = this.level.enemies.filter(/** Prüft, ob das Objekt in der Liste verbleiben soll. */ (e) => e !== enemy);
-    }, 1500);
+    setTimeout(
+      /** Removes the enemy after the delay. */ () => {
+        this.level.enemies = this.level.enemies.filter(
+          /** Checks whether the object should remain in the list. */ (e) =>
+            e !== enemy,
+        );
+      },
+      1500,
+    );
   }
 
   /**
-   * Behandelt einen gültigen Flaschentreffer und entfernt die Flasche verzögert.
-   * @param {Chicken|Endboss} enemy - Zu prüfender oder getroffener Gegner.
-   * @param {ThrowableObject|undefined} bottle - Getroffene Flasche, sofern vorhanden.
+   * Handles a valid bottle hit and schedules removal of the bottle.
+   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
+   * @param {ThrowableObject|undefined} bottle - The colliding bottle, if any.
    * @returns {void}
    */
   handleBottleHit(enemy, bottle) {
     if (!bottle || enemy.dead) return;
     bottle.splash();
     this.damageEnemy(enemy);
-    setTimeout(/** Entfernt die zerplatzte Flasche. */ () => {
-      this.throwableObjects = this.throwableObjects.filter(/** Prüft, ob das Objekt in der Liste verbleiben soll. */ (b) => b !== bottle);
-    }, 500);
+    this.removeBottleLater(bottle);
     if (enemy.dead) {
       new Audio('audio/chicken-squash.mp3').play();
       this.removeEnemyLater(enemy);
@@ -354,8 +388,8 @@ class World {
   }
 
   /**
-   * Verletzt den Endboss oder tötet ein getroffenes Huhn.
-   * @param {Chicken|Endboss} enemy - Zu prüfender oder getroffener Gegner.
+   * Damages the endboss or kills a chicken hit by a bottle.
+   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
    * @returns {void}
    */
   damageEnemy(enemy) {
@@ -370,12 +404,40 @@ class World {
   }
 
   /**
-   * Zeigt den Siegbildschirm, stoppt die Spielintervalle und spielt den Siegton.
+   * Displays the victory screen, stops game intervals, and plays the victory sound.
    * @returns {void}
    */
   finishWin() {
     this.showWinScreen = true;
     stopGame();
     new Audio('audio/won.mp3').play();
+  }
+
+  /**
+   * Schedules the removal of a bottle after 500 milliseconds.
+   * @param {ThrowableObject} bottle - The bottle to remove.
+   * @returns {void}
+   */
+  removeBottleLater(bottle) {
+    setTimeout(
+      /** Removes the splashed bottle. */ () => {
+        this.throwableObjects = this.throwableObjects.filter(
+          /** Checks whether the object should remain in the list. */ (b) =>
+            b !== bottle,
+        );
+      },
+      500,
+    );
+  }
+
+  /**
+   * Updates the world by checking collisions, win conditions, and item collections.
+   * @returns {void}
+   */
+  updateWorld() {
+    this.checkCollidions();
+    this.checkWin();
+    this.checkBottleCollection();
+    this.checkCoinCollection();
   }
 }

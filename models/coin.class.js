@@ -3,9 +3,9 @@ class Coin extends MovableObject {
   height = 45;
 
   /**
-   * Erstellt und initialisiert eine Instanz von Coin.
-   * @param {number} x - Horizontale Position in Pixeln.
-   * @param {number} y - Vertikale Position in Pixeln.
+   * Creates and initializes a Coin instance.
+   * @param {number} x - Horizontal position in pixels.
+   * @param {number} y - Vertical position in pixels.
    */
   constructor(x, y) {
     super();

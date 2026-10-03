@@ -52,7 +52,7 @@ class Endboss extends MovableObject {
   ];
 
   /**
-   * Erstellt und initialisiert eine Instanz von Endboss.
+   * Creates and initializes a Endboss instance.
    */
   constructor() {
     super().loadImage(this.IMAGES_ALERT[0]);
@@ -65,16 +65,16 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Startet die Intervalle für Bewegung und Animation.
+   * Starts the movement and animation intervals.
    * @returns {void}
    */
   animate() {
-    setStoppableInterval(/** Aktualisiert die Bewegung im Intervall. */ () => this.updateMovement(), 1000 / 60);
-    setStoppableInterval(/** Aktualisiert die Animation im Intervall. */ () => this.updateAnimation(), 200);
+    setStoppableInterval(/** Updates movement on each interval tick. */ () => this.updateMovement(), 1000 / 60);
+    setStoppableInterval(/** Updates animation on each interval tick. */ () => this.updateAnimation(), 200);
   }
 
   /**
-   * Aktiviert den sichtbaren Boss und aktualisiert seine Verfolgung.
+   * Activates the visible endboss and updates its pursuit.
    * @returns {void}
    */
   updateMovement() {
@@ -85,7 +85,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Zählt einen Flaschentreffer und setzt beim letzten Treffer den Todeszustand.
+   * Counts a bottle hit and marks the endboss as dead after the final hit.
    * @returns {void}
    */
   hit() {
@@ -99,7 +99,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Aktiviert den Boss dauerhaft, sobald er in den sichtbaren Bereich gelangt.
+   * Permanently activates the endboss once it enters the visible area.
    * @returns {void}
    */
   activateWhenVisible() {
@@ -110,7 +110,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Bewegt den Boss auf die Spielfigur zu und bestimmt sein Angriffstempo.
+   * Moves the endboss toward the character and adjusts its attack speed.
    * @returns {void}
    */
   followCharacter() {
@@ -126,7 +126,7 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Wählt die Todesanimation oder den aktuellen Animationszustand des Bosses.
+   * Selects the death animation or the current endboss animation state.
    * @returns {void}
    */
   updateAnimation() {
@@ -143,8 +143,8 @@ class Endboss extends MovableObject {
   }
 
   /**
-   * Setzt bei einem Zustandswechsel den Bildzähler zurück und animiert den Boss.
-   * @param {'alert'|'walk'|'attack'} nextState - Nächster Animationszustand.
+   * Resets the frame counter on state changes and animates the endboss.
+   * @param {'alert'|'walk'|'attack'} nextState - The next animation state.
    * @returns {void}
    */
   playStateAnimation(nextState) {

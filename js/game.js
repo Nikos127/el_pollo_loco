@@ -2,14 +2,17 @@ let canvas;
 let world;
 let keyboard = new Keyboard();
 let intervalIds = [];
+let isPaused = false;
+let pauseStartedAt = 0;
+let totalPausedTime = 0;
 
 const backgroundMusic = new Audio('audio/background-music.mp3');
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.2;
 
 /**
- * Schaltet die Hintergrundmusik um und aktualisiert den Musikbutton.
- * @param {HTMLButtonElement} button - Button zur Musiksteuerung.
+ * Toggles background music and updates the music button.
+ * @param {HTMLButtonElement} button - The music control button.
  * @returns {Promise<void>}
  */
 async function toggleMusic(button) {
@@ -26,8 +29,8 @@ async function toggleMusic(button) {
 }
 
 /**
- * Aktualisiert den zugänglichen Zustand und Tooltip des Musikbuttons.
- * @param {HTMLButtonElement} button - Button zur Musiksteuerung.
+ * Updates the music button's pressed state and tooltip.
+ * @param {HTMLButtonElement} button - The music control button.
  * @returns {void}
  */
 function updateMusicButton(button) {
@@ -37,7 +40,7 @@ function updateMusicButton(button) {
 }
 
 /**
- * Startet das Spiel einmalig und entfernt den Startbildschirm.
+ * Starts the game once and removes the start screen.
  * @returns {void}
  */
 function startGame() {
@@ -49,36 +52,45 @@ function startGame() {
 }
 
 /**
- * Startet ein Intervall und registriert es zum späteren Stoppen.
- * @param {function(): void} fn - Wiederholt auszuführende Funktion.
- * @param {number} time - Intervallabstand in Millisekunden.
+ * Registers an interval that skips its callback while paused.
+ * @param {function(): void} fn - The function to execute repeatedly.
+ * @param {number} time - The interval duration in milliseconds.
  * @returns {void}
  */
 function setStoppableInterval(fn, time) {
-  let id = setInterval(fn, time);
+  const id = setInterval(
+    /** Runs the game step only while the game is not paused. */
+    () => {
+      if (!isPaused) fn();
+    },
+    time,
+  );
   intervalIds.push(id);
 }
 
 /**
- * Beendet alle registrierten Spielintervalle und leert ihre Liste.
+ * Clears all registered game intervals and hides the pause button.
  * @returns {void}
  */
 function stopGame() {
   intervalIds.forEach(clearInterval);
   intervalIds = [];
+  document.getElementById('pause-button').hidden = true;
 }
 
 /**
- * Ermittelt das Canvas und erstellt die Spielwelt.
+ * Creates the game world and initializes the pause button.
  * @returns {void}
  */
 function init() {
   canvas = document.getElementById('canvas');
   world = new World(canvas, keyboard);
+  document.getElementById('pause-button').hidden = false;
+  updatePauseButton();
 }
 
 /**
- * Fordert den Vollbildmodus für den Spielcontainer an.
+ * Requests fullscreen mode for the game container.
  * @returns {void}
  */
 function fullscreen() {
@@ -87,8 +99,8 @@ function fullscreen() {
 }
 
 /**
- * Fordert den Vollbildmodus für das angegebene Element an.
- * @param {HTMLElement} elem - Im Vollbild anzuzeigendes Element.
+ * Requests fullscreen mode for the supplied element.
+ * @param {HTMLElement} elem - The element to display in fullscreen.
  * @returns {void}
  */
 function enterFullscreen(elem) {
@@ -104,7 +116,7 @@ function enterFullscreen(elem) {
 }
 
 /**
- * Fordert das Beenden des Vollbildmodus an.
+ * Requests to exit fullscreen mode.
  * @returns {void}
  */
 function closeFullscreen() {
@@ -119,16 +131,28 @@ function closeFullscreen() {
   }
 }
 
-window.addEventListener('keydown', /** Aktiviert die gedrückte Spieltaste. */ (event) => {
-  updateKeyboard(event, true);
-});
+window.addEventListener(
+  'keydown',
+  /** Handles game keys and toggles pause with P. */
+  (event) => {
+    if (event.code === 'KeyP') {
+      event.preventDefault();
+      if (!event.repeat) togglePause();
+      return;
+    }
+    if (!isPaused) updateKeyboard(event, true);
+  },
+);
 
-window.addEventListener('keyup', /** Setzt die losgelassene Spieltaste zurück. */ (event) => {
-  updateKeyboard(event, false);
-});
+window.addEventListener(
+  'keyup',
+  /** Resets the released game key. */ (event) => {
+    updateKeyboard(event, false);
+  },
+);
 
 /**
- * Stoppt das bisherige Spiel und erstellt Tastaturzustand und Spielwelt neu.
+ * Stops the previous game and recreates the keyboard state and world.
  * @returns {void}
  */
 function restartGame() {
@@ -144,9 +168,9 @@ function restartGame() {
 }
 
 /**
- * Aktualisiert den Zustand einer unterstützten Spieltaste.
- * @param {KeyboardEvent} event - Tastaturereignis.
- * @param {boolean} pressed - Ob die Taste gedrückt ist.
+ * Updates the state of a supported game key.
+ * @param {KeyboardEvent} event - The keyboard event.
+ * @param {boolean} pressed - Whether the key is pressed.
  * @returns {void}
  */
 function updateKeyboard(event, pressed) {
@@ -162,4 +186,61 @@ function updateKeyboard(event, pressed) {
   if (key) {
     keyboard[key] = pressed;
   }
+}
+
+/**
+ * Returns game time, excluding time spent paused.
+ * @returns {number} Game time in milliseconds.
+ */
+function getGameTime() {
+  const now = isPaused ? pauseStartedAt : Date.now();
+  return now - totalPausedTime;
+}
+
+/**
+ * Toggles pause while the game is active.
+ * @returns {void}
+ */
+function togglePause() {
+  if (!world || world.hasWon || world.character.isDead()) return;
+  if (isPaused) {
+    resumeGame();
+  } else {
+    pauseGame();
+  }
+  updatePauseButton();
+}
+
+/**
+ * Freezes game time, resets keyboard input, and pauses walking audio.
+ * @returns {void}
+ */
+function pauseGame() {
+  pauseStartedAt = Date.now();
+  isPaused = true;
+  keyboard = new Keyboard();
+  world.keyboard = keyboard;
+  world.character.walkingSound.pause();
+}
+
+/**
+ * Updates the pause button's icon, label, and pressed state.
+ * @returns {void}
+ */
+function updatePauseButton() {
+  const button = document.getElementById('pause-button');
+  const label = isPaused ? 'Spiel fortsetzen' : 'Spiel pausieren';
+  button.textContent = isPaused ? '\u25B6' : '\u23F8';
+  button.title = label;
+  button.setAttribute('aria-label', label);
+  button.setAttribute('aria-pressed', String(isPaused));
+}
+
+/**
+ * Resumes the game and records the elapsed pause duration.
+ * @returns {void}
+ */
+function resumeGame() {
+  totalPausedTime += Date.now() - pauseStartedAt;
+  isPaused = false;
 }

@@ -11,7 +11,7 @@ class Statusbar extends DrawableObject {
   percentage = 100;
 
   /**
-   * Erstellt und initialisiert eine Instanz von Statusbar.
+   * Creates and initializes a Statusbar instance.
    */
   constructor() {
     super();
@@ -24,8 +24,8 @@ class Statusbar extends DrawableObject {
   }
 
   /**
-   * Aktualisiert das Bild der Lebensanzeige anhand des Energiewerts.
-   * @param {number} percentage - Lebensenergie in Prozent.
+   * Updates the health bar image for the supplied percentage.
+   * @param {number} percentage - Health as a percentage.
    * @returns {void}
    */
   setPercentage(percentage) {
@@ -35,7 +35,7 @@ class Statusbar extends DrawableObject {
   }
 
   /**
-   * Ermittelt den Bildindex für die aktuelle Lebensenergie.
+   * Returns the image index for the current health percentage.
    * @returns {number}
    */
   resolveImageIndex() {

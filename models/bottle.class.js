@@ -4,9 +4,9 @@ class Bottle extends MovableObject {
   y = 355;
 
   /**
-   * Erstellt und initialisiert eine Instanz von Bottle.
-   * @param {number} x - Horizontale Position in Pixeln.
-   * @param {number} variant - Nummer der Bildvariante.
+   * Creates and initializes a Bottle instance.
+   * @param {number} x - Horizontal position in pixels.
+   * @param {number} variant - The image variant number.
    */
   constructor(x, variant) {
     super();

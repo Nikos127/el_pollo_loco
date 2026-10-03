@@ -10,23 +10,22 @@ class MovableObject extends DrawableObject {
   groundlevel = 165;
 
   /**
-   * Aktualisiert Höhe und vertikale Geschwindigkeit in einem Intervall.
+   * Updates vertical position and speed at regular intervals.
    * @returns {void}
    */
   applyGravity() {
-    setStoppableInterval(/** Berechnet den nächsten Schwerkraftschritt. */ () => {
+    setStoppableInterval(() => {
+      this.previousY = this.y;
       if ((this.isAboveGround() || this.speedY > 0) && !this.splashed) {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
       }
-      if (this.speedY < -30) {
-        this.speedY = -30;
-      }
+      this.speedY = Math.max(this.speedY, -30);
     }, 1000 / 25);
   }
 
   /**
-   * Prüft, ob das Objekt in der Luft ist; geworfene Flaschen gelten immer als in der Luft.
+   * Checks whether the object is airborne; thrown bottles always return true.
    * @returns {boolean}
    */
   isAboveGround() {
@@ -38,7 +37,7 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Verringert die Energie bei einem gültigen Treffer und behandelt Verletzung oder Tod.
+   * Reduces health on a valid hit and handles injury or death.
    * @returns {void}
    */
   hit() {
@@ -49,13 +48,13 @@ class MovableObject extends DrawableObject {
     if (this.energy <= 0) {
       this.handleDeath();
     } else {
-      this.lastHit = new Date().getTime();
+      this.lastHit = getGameTime();
       new Audio('audio/hurt.mp3').play();
     }
   }
 
   /**
-   * Prüft, ob die Lebensenergie null beträgt.
+   * Checks whether health is zero.
    * @returns {boolean}
    */
   isDead() {
@@ -63,18 +62,18 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Prüft, ob der letzte Treffer weniger als eine halbe Sekunde zurückliegt.
+   * Checks whether the last hit occurred less than half a second ago.
    * @returns {boolean}
    */
   isHurt() {
-    let timepassed = new Date().getTime() - this.lastHit;
+    let timepassed = getGameTime() - this.lastHit;
     timepassed = timepassed / 1000;
     return timepassed < 0.5;
   }
 
   /**
-   * Prüft die Überlappung der Kollisionsrechtecke beider Objekte.
-   * @param {MovableObject} mo - Zu prüfendes oder zu zeichnendes Objekt.
+   * Checks whether the collision rectangles of both objects overlap.
+   * @param {MovableObject} mo - The target object.
    * @returns {boolean}
    */
   isColliding(mo) {
@@ -87,7 +86,7 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Bewegt das Objekt um seine Geschwindigkeit nach rechts.
+   * Moves the object to the right by its current speed.
    * @returns {void}
    */
   moveRight() {
@@ -95,7 +94,7 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Bewegt das Objekt um seine Geschwindigkeit nach links.
+   * Moves the object to the left by its current speed.
    * @returns {void}
    */
   moveLeft() {
@@ -103,8 +102,8 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Zeigt das nächste Bild einer zyklisch wiederholten Animation.
-   * @param {string[]} images - Pfade der Animationsbilder.
+   * Displays the next frame of a looping animation.
+   * @param {string[]} images - Animation image paths.
    * @returns {void}
    */
   playAnimation(images) {
@@ -115,8 +114,8 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Zeigt das nächste Animationsbild und bleibt anschließend beim letzten Bild.
-   * @param {string[]} images - Pfade der Animationsbilder.
+   * Advances the animation and keeps displaying its final frame.
+   * @param {string[]} images - Animation image paths.
    * @returns {void}
    */
   playAnimationOnce(images) {
@@ -127,12 +126,12 @@ class MovableObject extends DrawableObject {
   }
 
   /**
-   * Setzt den Todeszustand, merkt den Zeitpunkt und spielt den Todeston.
+   * Sets health to zero, records the death time, and plays the death sound.
    * @returns {void}
    */
   handleDeath() {
     this.energy = 0;
-    this.timeOfDeath = new Date().getTime();
+    this.timeOfDeath = getGameTime();
     this.currentImage = 0;
     new Audio('audio/character-die.mp3').play();
   }

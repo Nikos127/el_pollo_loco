@@ -3,7 +3,7 @@ class Cloud extends MovableObject {
   width = 500;
   height = 250;
   /**
-   * Erstellt und initialisiert eine Instanz von Cloud.
+   * Creates and initializes a Cloud instance.
    */
   constructor() {
     super().loadImage('img/5_background/layers/4_clouds/1.png');
@@ -12,11 +12,11 @@ class Cloud extends MovableObject {
   }
 
   /**
-   * Startet die Intervalle für Bewegung und Animation.
+   * Starts the cloud movement interval.
    * @returns {void}
    */
   animate() {
-    setStoppableInterval(/** Aktualisiert die Bewegung im Intervall. */ () => {
+    setStoppableInterval(/** Updates movement on each interval tick. */ () => {
       this.moveLeft();
     }, 1000 / 60);
   }

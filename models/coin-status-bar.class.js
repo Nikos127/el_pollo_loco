@@ -1,6 +1,6 @@
 class CoinStatusBar extends DrawableObject {
   /**
-   * Erstellt und initialisiert eine Instanz von CoinStatusBar.
+   * Creates and initializes a CoinStatusBar instance.
    */
   constructor() {
     super();
@@ -12,9 +12,9 @@ class CoinStatusBar extends DrawableObject {
   }
 
   /**
-   * Zeichnet das Symbol und die aktuelle Anzahl.
-   * @param {CanvasRenderingContext2D} ctx - 2D-Zeichenkontext.
-   * @param {number} amount - Anzuzeigende Anzahl.
+   * Draws the icon and current count.
+   * @param {CanvasRenderingContext2D} ctx - The 2D drawing context.
+   * @param {number} amount - The count to display.
    * @returns {void}
    */
   draw(ctx, amount) {
@@ -30,8 +30,8 @@ class CoinStatusBar extends DrawableObject {
   }
 
   /**
-   * Legt Schrift, Ausrichtung und Farben der Zähleranzeige fest.
-   * @param {CanvasRenderingContext2D} ctx - 2D-Zeichenkontext.
+   * Sets the font, alignment, and colors for the counter text.
+   * @param {CanvasRenderingContext2D} ctx - The 2D drawing context.
    * @returns {void}
    */
   setTextStyle(ctx) {

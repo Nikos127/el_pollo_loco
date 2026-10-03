@@ -7,10 +7,10 @@ class Level {
   level_end_x = 4000;
 
   /**
-   * Erstellt und initialisiert eine Instanz von Level.
-   * @param {Array<Chicken|Endboss>} enemies - Gegner des Levels.
-   * @param {Cloud[]} clouds - Wolken des Levels.
-   * @param {BackgroundObject[]} backgroundObjects - Hintergrundobjekte des Levels.
+   * Creates and initializes a Level instance.
+   * @param {Array<Chicken|Endboss>} enemies - The level enemies.
+   * @param {Cloud[]} clouds - The level clouds.
+   * @param {BackgroundObject[]} backgroundObjects - The level background objects.
    */
   constructor(enemies, clouds, backgroundObjects) {
     this.enemies = enemies;
@@ -22,7 +22,7 @@ class Level {
   }
 
   /**
-   * Verteilt Flaschen mit wechselnden Bildvarianten im Level.
+   * Places bottles with alternating image variants throughout the level.
    * @returns {void}
    */
   createBottles() {
@@ -34,7 +34,7 @@ class Level {
   }
 
   /**
-   * Verteilt Münzen mit zufälligen Höhen und Abständen im Level.
+   * Places coins at randomized heights and horizontal intervals.
    * @returns {void}
    */
   createCoins() {
@@ -49,7 +49,7 @@ class Level {
   }
 
   /**
-   * Erstellt abwechselnde Hintergrundabschnitte für das Level.
+   * Creates alternating background sections throughout the level.
    * @returns {void}
    */
   createBackgroundObjects() {
@@ -61,9 +61,9 @@ class Level {
   }
 
   /**
-   * Erstellt die vier Hintergrundebenen eines Abschnitts.
-   * @param {number} x - Horizontale Position in Pixeln.
-   * @param {number} variant - Nummer der Bildvariante.
+   * Creates the four background layers for one section.
+   * @param {number} x - Horizontal position in pixels.
+   * @param {number} variant - The image variant number.
    * @returns {void}
    */
   addBackgroundSection(x, variant) {
@@ -74,7 +74,7 @@ class Level {
       `2_second_layer/${variant}.png`,
       `1_first_layer/${variant}.png`,
     ];
-    layers.forEach(/** Erstellt die aktuelle Hintergrundebene. */ (layer) => {
+    layers.forEach(/** Creates the current background layer. */ (layer) => {
       this.backgroundObjects.push(new BackgroundObject(basePath + layer, x));
     });
   }

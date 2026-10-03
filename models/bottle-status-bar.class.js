@@ -1,6 +1,6 @@
 class BottleStatusBar extends DrawableObject {
   /**
-   * Erstellt und initialisiert eine Instanz von BottleStatusBar.
+   * Creates and initializes a BottleStatusBar instance.
    */
   constructor() {
     super();
@@ -12,9 +12,9 @@ class BottleStatusBar extends DrawableObject {
   }
 
   /**
-   * Zeichnet das Symbol und die aktuelle Anzahl.
-   * @param {CanvasRenderingContext2D} ctx - 2D-Zeichenkontext.
-   * @param {number} amout - Anzuzeigende Anzahl.
+   * Draws the icon and current count.
+   * @param {CanvasRenderingContext2D} ctx - The 2D drawing context.
+   * @param {number} amout - The count to display.
    * @returns {void}
    */
   draw(ctx, amout) {
@@ -30,8 +30,8 @@ class BottleStatusBar extends DrawableObject {
   }
 
   /**
-   * Legt Schrift, Ausrichtung und Farben der Zähleranzeige fest.
-   * @param {CanvasRenderingContext2D} ctx - 2D-Zeichenkontext.
+   * Sets the font, alignment, and colors for the counter text.
+   * @param {CanvasRenderingContext2D} ctx - The 2D drawing context.
    * @returns {void}
    */
   setTextStyle(ctx) {
