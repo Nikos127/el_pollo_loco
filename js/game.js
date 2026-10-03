@@ -244,3 +244,33 @@ function resumeGame() {
   totalPausedTime += Date.now() - pauseStartedAt;
   isPaused = false;
 }
+
+function bindMobileButton(button) {
+  const key = button.dataset.key;
+
+  button.addEventListener('pointerdown', (event) => {
+    event.preventDefault();
+
+    if (!world || isPaused || world.hasWon || world.character.isDead()) {
+      return;
+    }
+
+    button.setPointerCapture(event.pointerId);
+    keyboard[key] = true;
+  });
+
+  const release = () => {
+    keyboard[key] = false;
+  };
+
+  button.addEventListener('pointerup', release);
+  button.addEventListener('pointercancel', release);
+  button.addEventListener('lostpointercapture', release);
+  window.addEventListener('blur', release);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  document
+    .querySelectorAll('.mobile-controls button')
+    .forEach(bindMobileButton);
+});
