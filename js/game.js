@@ -46,7 +46,6 @@ function updateMusicButton(button) {
 function startGame() {
   if (world || portraitQuery.matches) return;
   if (window.matchMedia('(max-width: 1024px)').matches) {
-    document.body.classList.add('mobile-game-active');
     fullscreen();
   }
   initLevel();
@@ -107,6 +106,7 @@ function fullscreen() {
  * @returns {void}
  */
 async function enterFullscreen(elem) {
+  document.body.classList.add('mobile-game-active');
   try {
     if (elem.requestFullscreen) {
       await elem.requestFullscreen();
