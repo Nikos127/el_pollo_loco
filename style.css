@@ -237,6 +237,32 @@ canvas {
   text-align: center;
 }
 
+body.mobile-game-active {
+  margin: 0;
+  overflow: hidden;
+}
+
+body.mobile-game-active h1 {
+  display: none;
+}
+
+body.mobile-game-active #fullscreen {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  max-width: none;
+  background-color: black;
+  z-index: 5;
+}
+
+body.mobile-game-active #fullscreen canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
 @media only screen and (max-width: 1024px) {
   #fullscreen {
     max-width: 100%;
