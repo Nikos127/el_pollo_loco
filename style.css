@@ -215,6 +215,13 @@ canvas {
   background-color: #ffe08a;
 }
 
+#fullscreen button,
+#fullscreen .controls-help summary {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
 @media only screen and (max-width: 1024px) {
   #fullscreen {
     max-width: 100%;

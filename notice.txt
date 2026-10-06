@@ -1,0 +1,3 @@
+In der mobile Ansicht kann nur in querformat gespielt werden, mit hinweis dazu.
+Beim klicken auf den Tasten werden die buchstaben markiert und kommt iPhone untermenü.
+mobile ansicht sobald spiel startet, automatisch fullscreen
