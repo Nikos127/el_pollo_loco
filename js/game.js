@@ -44,7 +44,7 @@ function updateMusicButton(button) {
  * @returns {void}
  */
 function startGame() {
-  if (world) return;
+  if (world || portraitQuery.matches) return;
 
   initLevel();
   init();
@@ -156,6 +156,7 @@ window.addEventListener(
  * @returns {void}
  */
 function restartGame() {
+  if (portraitQuery.matches) return;
   stopGame();
   cancelAnimationFrame(world.animationFrameId);
   world.character.walkingSound.pause();
@@ -202,6 +203,7 @@ function getGameTime() {
  * @returns {void}
  */
 function togglePause() {
+  if (portraitQuery.matches) return;
   if (!world || world.hasWon || world.character.isDead()) return;
   if (isPaused) {
     resumeGame();
@@ -274,3 +276,15 @@ window.addEventListener('DOMContentLoaded', () => {
     .querySelectorAll('.mobile-controls button')
     .forEach(bindMobileButton);
 });
+
+const portraitQuery = window.matchMedia(
+  '(max-width: 1024px) and (orientation: portrait)',
+);
+function handleOrientationChange() {
+  if (!portraitQuery.matches || !world || isPaused) return;
+  if (world.hasWon || world.character.isDead()) return;
+
+  pauseGame();
+  updatePauseButton();
+}
+portraitQuery.addEventListener('change', handleOrientationChange);

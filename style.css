@@ -222,6 +222,21 @@ canvas {
   -webkit-touch-callout: none;
 }
 
+#orientation-notice {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background-color: #fff3d6;
+  color: #803300;
+  font-family: Arial, sans-serif;
+  font-size: 24px;
+  text-align: center;
+}
+
 @media only screen and (max-width: 1024px) {
   #fullscreen {
     max-width: 100%;
@@ -310,5 +325,11 @@ canvas {
 
   .pause-button {
     right: 88px;
+  }
+}
+
+@media only screen and (max-width: 1024px) and (orientation: portrait) {
+  #orientation-notice {
+    display: flex;
   }
 }
