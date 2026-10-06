@@ -46,6 +46,7 @@ function updateMusicButton(button) {
 function startGame() {
   if (world || portraitQuery.matches) return;
   if (window.matchMedia('(max-width: 1024px)').matches) {
+    document.body.classList.add('mobile-game-active');
     fullscreen();
   }
   initLevel();
