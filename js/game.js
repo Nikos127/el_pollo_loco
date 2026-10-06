@@ -45,7 +45,9 @@ function updateMusicButton(button) {
  */
 function startGame() {
   if (world || portraitQuery.matches) return;
-
+  if (window.matchMedia('(max-width: 1024px)').matches) {
+    fullscreen();
+  }
   initLevel();
   init();
   document.getElementById('startscreen').remove();
@@ -103,15 +105,15 @@ function fullscreen() {
  * @param {HTMLElement} elem - The element to display in fullscreen.
  * @returns {void}
  */
-function enterFullscreen(elem) {
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  } else if (elem.webkitRequestFullscreen) {
-    /* Safari */
-    elem.webkitRequestFullscreen();
-  } else if (elem.msRequestFullscreen) {
-    /* IE11 */
-    elem.msRequestFullscreen();
+async function enterFullscreen(elem) {
+  try {
+    if (elem.requestFullscreen) {
+      await elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      await elem.webkitRequestFullscreen();
+    }
+  } catch (error) {
+    console.warn('Vollbild konnte nicht aktiviert werden', error);
   }
 }
 
