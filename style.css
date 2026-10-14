@@ -112,7 +112,7 @@ canvas {
 .controls-help {
   position: absolute;
   left: 8px;
-  bottom: 8px;
+  bottom: 60px;
   z-index: 3;
   font-family: Arial, sans-serif;
   color: #803300;
@@ -265,7 +265,7 @@ body.mobile-game-active #fullscreen canvas {
 
 .imprint-link {
   position: absolute;
-  top: 12px;
+  bottom: 12px;
   left: 12px;
   z-index: 3;
   padding: 8px 12px;
@@ -286,6 +286,13 @@ body.mobile-game-active #fullscreen canvas {
 .imprint-link:focus-visible {
   outline: 3px solid #803300;
   outline-offset: 3px;
+}
+
+#fullscreen:not(:has(#startscreen)):has(
+    #pause-button[aria-pressed='false']:not([hidden])
+  )
+  .imprint-link {
+  display: none;
 }
 
 @media only screen and (max-width: 1024px) {
