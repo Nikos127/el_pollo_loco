@@ -20,6 +20,10 @@ class MovableObject extends DrawableObject {
         this.y -= this.speedY;
         this.speedY -= this.acceleration;
       }
+      if (this instanceof Character && this.y > this.groundlevel) {
+        this.y = this.groundlevel;
+        this.speedY = 0;
+      }
       this.speedY = Math.max(this.speedY, -30);
     }, 1000 / 25);
   }

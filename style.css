@@ -1,6 +1,8 @@
 body {
   background-image: url('img/5_background/desert.jpg');
   background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   display: flex;
   justify-content: center;
   flex-direction: column;
@@ -99,6 +101,16 @@ canvas {
 .music-button[aria-presset='true'] {
   background-color: #ffe08a;
   box-shadow: inset 0 0 0 2px #803300;
+}
+
+.music-button[aria-pressed='false']::after {
+  content: '';
+  position: absolute;
+  width: 55px;
+  height: 3px;
+  background-color: #803300;
+  transform: rotate(45deg);
+  pointer-events: none;
 }
 
 #restart-button {
@@ -293,6 +305,35 @@ body.mobile-game-active #fullscreen canvas {
   )
   .imprint-link {
   display: none;
+}
+
+#menu-button {
+  display: none;
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: auto;
+  z-index: 3;
+  width: max-content;
+  padding: 0 12px;
+  font-size: 20px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+#fullscreen:has(#restart-button:not([hidden])) #menu-button {
+  display: grid;
+}
+
+#fullscreen:has(#restart-button:not([hidden])) .controls-help,
+#fullscreen:has(#restart-button:not([hidden])) .imprint-link {
+  display: none;
+}
+
+#fullscreen.result-screen button,
+#fullscreen.result-screen .controls-help,
+#fullscreen.result-screen .imprint-link {
+  display: none !important;
 }
 
 @media only screen and (max-width: 1024px) {

@@ -103,10 +103,10 @@ class WorldRenderer {
   drawGameObjects() {
     const world = this.world;
     world.ctx.translate(world.camera_x, 0);
+    this.addObjectsToMap(world.level.enemies);
     this.addToMap(world.character);
     this.addObjectsToMap(world.level.bottles);
     this.addObjectsToMap(world.level.coins);
-    this.addObjectsToMap(world.level.enemies);
     this.addObjectsToMap(world.throwableObjects);
     world.ctx.translate(-world.camera_x, 0);
   }
@@ -140,7 +140,6 @@ class WorldRenderer {
       world.gameOverScreen.img =
         world.gameOverScreen.imageCache[world.gameOverScreen.IMAGES_WON[0]];
       this.addToMap(world.gameOverScreen);
-      document.getElementById('restart-button').hidden = false;
     }
   }
 
@@ -154,11 +153,13 @@ class WorldRenderer {
 
     const timeSinceDead = getGameTime() - world.character.timeOfDeath;
     if (timeSinceDead >= 3500) {
+      document.getElementById('fullscreen').classList.remove('result-screen');
+      document.getElementById('restart-button').hidden = false;
       world.gameOverScreen.img =
         world.gameOverScreen.imageCache[world.gameOverScreen.IMAGES_LOST[1]];
       this.addToMap(world.gameOverScreen);
-      document.getElementById('restart-button').hidden = false;
     } else if (timeSinceDead >= 2000) {
+      document.getElementById('fullscreen').classList.add('result-screen');
       this.addToMap(world.gameOverScreen);
     }
   }

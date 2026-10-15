@@ -26,7 +26,7 @@ class Level {
    * @returns {void}
    */
   createBottles() {
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < 15; i++) {
       const x = 350 + i * 150;
       const variant = (i % 2) + 1;
       this.bottles.push(new Bottle(x, variant));
@@ -74,8 +74,10 @@ class Level {
       `2_second_layer/${variant}.png`,
       `1_first_layer/${variant}.png`,
     ];
-    layers.forEach(/** Creates the current background layer. */ (layer) => {
-      this.backgroundObjects.push(new BackgroundObject(basePath + layer, x));
-    });
+    layers.forEach(
+      /** Creates the current background layer. */ (layer) => {
+        this.backgroundObjects.push(new BackgroundObject(basePath + layer, x));
+      },
+    );
   }
 }

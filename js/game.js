@@ -134,6 +134,18 @@ function closeFullscreen() {
   }
 }
 
+function restoreLayoutAfterFullscreen() {
+  if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+    document.body.classList.remove('mobile-game-active');
+  }
+}
+
+document.addEventListener('fullscreenchange', restoreLayoutAfterFullscreen);
+document.addEventListener(
+  'webkitfullscreenchange',
+  restoreLayoutAfterFullscreen,
+);
+
 window.addEventListener(
   'keydown',
   /** Handles game keys and toggles pause with P. */

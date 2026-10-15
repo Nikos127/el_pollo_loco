@@ -14,6 +14,7 @@ class World {
   chickenSquash;
   hasWon = false;
   showWinScreen = false;
+  lastBottleThrow = -Infinity;
 
   /**
    * Creates and initializes a World instance.
@@ -90,6 +91,8 @@ class World {
     if (this.hasWon || this.character.isDead() || this.character.isHurt())
       return;
     if (!this.keyboard.SPACE || this.character.bottles <= 0) return;
+    const now = getGameTime();
+    if (now - this.lastBottleThrow < 800) return;
 
     const bottle = new ThrowableObject(
       this.character.x + (this.character.otherDirection ? 0 : 100),
@@ -99,6 +102,7 @@ class World {
 
     this.throwableObjects.push(bottle);
     this.character.bottles--;
+    this.lastBottleThrow = now;
     new Audio('audio/throw-bottle.mp3').play();
   }
 
@@ -257,9 +261,14 @@ class World {
    * @returns {void}
    */
   finishWin() {
+    document.getElementById('fullscreen').classList.add('result-screen');
     this.showWinScreen = true;
     stopGame();
     new Audio('audio/won.mp3').play();
+    setTimeout(() => {
+      document.getElementById('fullscreen').classList.remove('result-screen');
+      document.getElementById('restart-button').hidden = false;
+    }, 3000);
   }
 
   /**
