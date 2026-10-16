@@ -356,15 +356,24 @@ body.mobile-game-active #fullscreen canvas {
   }
 }
 
-@media only screen and (max-width: 720px) {
-  canvas {
-    width: 100%;
+@media only screen and (max-height: 1024px), (max-height: 600px) {
+  body {
+    margin: 0;
+    height: 100dvh;
   }
 
-  @media only screen and (max-height: 480px) {
-    canvas {
-      height: 100vh;
-    }
+  h1 {
+    display: none;
+  }
+
+  body:not(.mobile-game-active) #fullscreen:not(:fullscreen) {
+    width: min(720px, 100vw, 150dvh);
+    max-width: 100%;
+  }
+
+  body:not(.mobile-game-active) #fullscreen:not(:fullscreen)canvas {
+    width: 100%;
+    height: auto;
   }
 }
 
