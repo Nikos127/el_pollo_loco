@@ -1,3 +1,4 @@
+/** A slowly moving background cloud. */
 class Cloud extends MovableObject {
   y = 20;
   width = 500;

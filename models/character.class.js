@@ -1,3 +1,4 @@
+/** The playable character with movement, collisions, and animation states. */
 class Character extends MovableObject {
   width = 150;
   height = 250;
@@ -10,8 +11,8 @@ class Character extends MovableObject {
   offset = {
     top: 120,
     bottom: 30,
-    left: 40,
-    right: 30,
+    left: 55,
+    right: 45,
   };
 
   IMAGES_IDLE = [
@@ -132,12 +133,20 @@ class Character extends MovableObject {
     if (movesLeft) this.moveLeft();
     if (jumps) this.jump();
 
-    if (movesRight || movesLeft || jumps || this.isAboveGround()) {
+    this.updateMovementActivity(movesRight || movesLeft || jumps);
+    this.world.camera_x = -this.x + 100;
+  }
+
+  /**
+   * Resets idle timing while moving, jumping, or airborne.
+   * @param {boolean} hasMovementInput - Whether a movement or jump action was accepted.
+   * @returns {void}
+   */
+  updateMovementActivity(hasMovementInput) {
+    if (hasMovementInput || this.isAboveGround()) {
       this.lastMovementTime = getGameTime();
       this.currentIdleAnimation = null;
     }
-
-    this.world.camera_x = -this.x + 100;
   }
 
   /**
@@ -183,19 +192,22 @@ class Character extends MovableObject {
   }
 
   /**
-   * Sets the initial vertical jump speed and plays the jump sound.
+   * Sets jump speed, estimates the apex for animation, and plays the jump sound.
    * @param {number} [strength=30] - Initial vertical jump speed.
    * @returns {void}
    */
   jump(strength = 30) {
     this.currentImage = 0;
     this.speedY = strength;
+    this.jumpStrength = strength;
+    const rise = (strength * (strength / this.acceleration + 1)) / 2;
+    this.jumpPeakY = this.y - rise;
     new Audio('audio/jumping.mp3').play();
   }
 
   /**
-   * Checks whether the falling character hits an enemy from above.
-   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
+   * Checks whether the falling feet cross the enemy top with central foot overlap.
+   * @param {Chicken|Endboss} enemy - The enemy whose top and horizontal bounds are checked.
    * @returns {boolean}
    */
   isAboveEnemy(enemy) {
@@ -206,8 +218,8 @@ class Character extends MovableObject {
       this.speedY < 0 &&
       previousFeet <= enemyTop &&
       feet >= enemyTop &&
-      this.x + this.width - this.offset.right > enemy.x + enemy.offset.left &&
-      this.x + this.offset.left < enemy.x + enemy.width - enemy.offset.right
+      this.x + this.width / 2 + 10 > enemy.x + enemy.offset.left &&
+      this.x + this.width / 2 - 10 < enemy.x + enemy.width - enemy.offset.right
     );
   }
 
@@ -219,33 +231,78 @@ class Character extends MovableObject {
     if (this.isDead()) {
       this.playDeathAnimation();
     } else if (this.isHurt()) {
-      if (this.lastAnimateHit !== this.lastHit) {
-        this.currentImage = 0;
-        this.lastAnimateHit = this.lastHit;
-      }
-      this.playAnimationOnce(this.IMAGES_HURT);
+      this.playHurtAnimation();
     } else if (this.isAboveGround()) {
-      this.playAnimationOnce(this.IMAGES_JUMPING);
+      this.playJumpAnimation();
     } else if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-      this.playAnimation(this.IMAGES_WALKING);
-      if (this.walkingSound.paused) this.walkingSound.play();
+      this.playWalkingAnimation();
     } else {
-      this.walkingSound.pause();
+      this.playIdleAnimation();
+    }
+  }
 
-      const images =
-        getGameTime() - this.lastMovementTime >= 30000
-          ? this.IMAGES_LONG_IDLE
-          : this.IMAGES_IDLE;
+  /** Displays the frame matching jump progress and pauses walking audio. */
+  playJumpAnimation() {
+    const progress = this.getJumpProgress();
+    const lastIndex = this.IMAGES_JUMPING.length - 1;
+    const index = Math.min(
+      lastIndex,
+      Math.floor(Math.max(0, progress) * (lastIndex + 1)),
+    );
+    this.img = this.imageCache[this.IMAGES_JUMPING[index]];
+    this.walkingSound.pause();
+  }
 
-      if (this.currentIdleAnimation !== images) {
-        this.currentIdleAnimation = images;
-        this.currentImage = 0;
-      }
+  /**
+   * Calculates animation progress from ascent speed or descent position.
+   * @returns {number} Jump progress before frame-index clamping.
+   */
+  getJumpProgress() {
+    const strength = this.jumpStrength ?? 30;
+    const peak = this.jumpPeakY ?? this.y;
+    return this.speedY > 0
+      ? 0.5 * (1 - this.speedY / strength)
+      : 0.5 + (0.5 * (this.y - peak)) / (this.groundlevel - peak);
+  }
 
-      if (getGameTime() - this.lastIdleFrameTime >= 200) {
-        this.playAnimation(images);
-        this.lastIdleFrameTime = getGameTime();
-      }
+  /** Restarts the hurt frames for a new hit and holds the final frame. */
+  playHurtAnimation() {
+    if (this.lastAnimateHit !== this.lastHit) {
+      this.currentImage = 0;
+      this.lastAnimateHit = this.lastHit;
+    }
+    this.playAnimationOnce(this.IMAGES_HURT);
+  }
+
+  /** Advances the walking animation and starts walking audio if paused. */
+  playWalkingAnimation() {
+    this.playAnimation(this.IMAGES_WALKING);
+    if (this.walkingSound.paused) this.walkingSound.play();
+  }
+
+  /** Selects normal or long idle frames after 30 seconds without movement. */
+  playIdleAnimation() {
+    this.walkingSound.pause();
+    const images =
+      getGameTime() - this.lastMovementTime >= 30000
+        ? this.IMAGES_LONG_IDLE
+        : this.IMAGES_IDLE;
+    this.updateIdleAnimation(images);
+  }
+
+  /**
+   * Resets changed idle sequences and advances them at 200-millisecond intervals.
+   * @param {string[]} images - The selected idle image paths.
+   * @returns {void}
+   */
+  updateIdleAnimation(images) {
+    if (this.currentIdleAnimation !== images) {
+      this.currentIdleAnimation = images;
+      this.currentImage = 0;
+    }
+    if (getGameTime() - this.lastIdleFrameTime >= 200) {
+      this.playAnimation(images);
+      this.lastIdleFrameTime = getGameTime();
     }
   }
 

@@ -1,3 +1,4 @@
+/** Displays endboss health using six bar images. */
 class EndbossStatusBar extends DrawableObject {
   IMAGES = [
     'img/7_statusbars/2_statusbar_endboss/green/green0.png',
@@ -9,7 +10,7 @@ class EndbossStatusBar extends DrawableObject {
   ];
 
   /**
-   * Creates and initializes a EndbossStatusBar instance.
+   * Creates and initializes an EndbossStatusBar instance.
    */
   constructor() {
     super();

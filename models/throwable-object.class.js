@@ -1,3 +1,4 @@
+/** A thrown bottle with flight, rotation, and splash animations. */
 class ThrowableObject extends MovableObject {
   IMAGE = [
     'img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png',
@@ -19,6 +20,7 @@ class ThrowableObject extends MovableObject {
    * Creates and initializes a ThrowableObject instance.
    * @param {number} x - Horizontal position in pixels.
    * @param {number} y - Vertical position in pixels.
+   * @param {boolean} [otherDirection=false] - Whether the bottle travels left.
    */
   constructor(x, y, otherDirection = false) {
     super().loadImage(
@@ -42,17 +44,16 @@ class ThrowableObject extends MovableObject {
   throw() {
     this.speedY = 20;
     this.applyGravity();
-    setStoppableInterval(
-      /** Animates and moves the flying bottle. */ () => {
-        if (this.splashed) {
-          return;
-        } else {
-          this.playAnimation(this.IMAGE);
-          this.x += this.otherDirection ? -10 : 10;
-        }
-      },
-      25,
-    );
+    setStoppableInterval(/** Advances bottle flight on each tick. */ () => {
+      this.updateFlight();
+    }, 25);
+  }
+
+  /** Rotates and moves the bottle horizontally unless it has splashed. */
+  updateFlight() {
+    if (this.splashed) return;
+    this.playAnimation(this.IMAGE);
+    this.x += this.otherDirection ? -10 : 10;
   }
 
   /**

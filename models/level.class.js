@@ -1,3 +1,4 @@
+/** Stores level objects and creates backgrounds and collectibles. */
 class Level {
   enemies;
   clouds;

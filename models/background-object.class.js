@@ -1,3 +1,4 @@
+/** A fixed-size background layer placed along the level. */
 class BackgroundObject extends MovableObject {
   width = 720;
   height = 480;

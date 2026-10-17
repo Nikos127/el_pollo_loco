@@ -1,3 +1,4 @@
+/** Adds movement, gravity, health, and collision checks to drawable objects. */
 class MovableObject extends DrawableObject {
   offset = { top: 0, right: 0, bottom: 0, left: 0 };
   speed = 0.15;
@@ -14,7 +15,7 @@ class MovableObject extends DrawableObject {
    * @returns {void}
    */
   applyGravity() {
-    setStoppableInterval(() => {
+    setStoppableInterval(/** Applies gravity and clamps character landing and fall speed. */ () => {
       this.previousY = this.y;
       if ((this.isAboveGround() || this.speedY > 0) && !this.splashed) {
         this.y -= this.speedY;

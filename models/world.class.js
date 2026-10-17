@@ -1,3 +1,4 @@
+/** Coordinates gameplay objects, collisions, collectibles, and results. */
 class World {
   character = new Character();
   level = level1;
@@ -93,13 +94,20 @@ class World {
     if (!this.keyboard.SPACE || this.character.bottles <= 0) return;
     const now = getGameTime();
     if (now - this.lastBottleThrow < 800) return;
+    this.throwBottle(now);
+  }
 
+  /**
+   * Creates a thrown bottle, consumes one bottle, records its time, and plays audio.
+   * @param {number} now - Current pause-adjusted game time in milliseconds.
+   * @returns {void}
+   */
+  throwBottle(now) {
     const bottle = new ThrowableObject(
       this.character.x + (this.character.otherDirection ? 0 : 100),
       this.character.y + 100,
       this.character.otherDirection,
     );
-
     this.throwableObjects.push(bottle);
     this.character.bottles--;
     this.lastBottleThrow = now;
@@ -192,7 +200,7 @@ class World {
 
   /**
    * Kills a stomped chicken and makes the character bounce.
-   * @param {Chicken|Endboss} enemy - The enemy to check or damage.
+   * @param {Chicken} enemy - The stomped chicken.
    * @returns {void}
    */
   squashEnemy(enemy) {
@@ -265,7 +273,7 @@ class World {
     this.showWinScreen = true;
     stopGame();
     new Audio('audio/won.mp3').play();
-    setTimeout(() => {
+    setTimeout(/** Reveals restart controls after the victory display delay. */ () => {
       document.getElementById('fullscreen').classList.remove('result-screen');
       document.getElementById('restart-button').hidden = false;
     }, 3000);

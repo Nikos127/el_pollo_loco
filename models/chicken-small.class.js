@@ -1,3 +1,4 @@
+/** A smaller chicken enemy with its own sprites. */
 class ChickenSmall extends Chicken {
   y = 345;
   width = 60;

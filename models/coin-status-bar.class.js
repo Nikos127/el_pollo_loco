@@ -1,3 +1,4 @@
+/** Draws the coin icon and collected coin count. */
 class CoinStatusBar extends DrawableObject {
   /**
    * Creates and initializes a CoinStatusBar instance.

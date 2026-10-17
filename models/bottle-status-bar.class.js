@@ -1,3 +1,4 @@
+/** Draws the bottle icon and inventory count. */
 class BottleStatusBar extends DrawableObject {
   /**
    * Creates and initializes a BottleStatusBar instance.
@@ -30,7 +31,7 @@ class BottleStatusBar extends DrawableObject {
   }
 
   /**
-   * Sets the font, alignment, and colors for the counter text.
+   * Sets counter font, baseline, and colors; txtAlign and linewidth are nonstandard properties.
    * @param {CanvasRenderingContext2D} ctx - The 2D drawing context.
    * @returns {void}
    */

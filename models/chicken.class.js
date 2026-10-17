@@ -1,3 +1,4 @@
+/** A walking chicken enemy. */
 class Chicken extends MovableObject {
   y = 320;
   width = 80;

@@ -1,4 +1,8 @@
+/** Draws the world, status bars, and result screens. */
 class WorldRenderer {
+  /** Creates a renderer for a world.
+ * @param {World} world - The world to draw.
+ */
   constructor(world) {
     this.world = world;
   }
@@ -131,7 +135,7 @@ class WorldRenderer {
   }
 
   /**
-   * Displays the victory screen and restart button when victory is ready.
+   * Draws the victory image once the world enables the victory screen.
    * @returns {void}
    */
   drawWinScreen() {
@@ -150,17 +154,22 @@ class WorldRenderer {
   drawLossScreen() {
     const world = this.world;
     if (!world.character.isDead() || world.hasWon) return;
-
     const timeSinceDead = getGameTime() - world.character.timeOfDeath;
     if (timeSinceDead >= 3500) {
-      document.getElementById('fullscreen').classList.remove('result-screen');
-      document.getElementById('restart-button').hidden = false;
-      world.gameOverScreen.img =
-        world.gameOverScreen.imageCache[world.gameOverScreen.IMAGES_LOST[1]];
-      this.addToMap(world.gameOverScreen);
+      this.drawFinalLossScreen();
     } else if (timeSinceDead >= 2000) {
       document.getElementById('fullscreen').classList.add('result-screen');
       this.addToMap(world.gameOverScreen);
     }
+  }
+
+  /** Draws the final defeat image and reveals the restart controls. */
+  drawFinalLossScreen() {
+    const world = this.world;
+    document.getElementById('fullscreen').classList.remove('result-screen');
+    document.getElementById('restart-button').hidden = false;
+    world.gameOverScreen.img =
+      world.gameOverScreen.imageCache[world.gameOverScreen.IMAGES_LOST[1]];
+    this.addToMap(world.gameOverScreen);
   }
 }

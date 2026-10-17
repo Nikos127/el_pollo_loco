@@ -1,3 +1,4 @@
+/** Stores and draws victory and defeat images. */
 class GameOverScreen extends DrawableObject {
   IMAGES_LOST = [
     'img/You won, you lost/You lost.png',

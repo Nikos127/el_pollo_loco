@@ -1,3 +1,4 @@
+/** A collectible bottle placed on the ground. */
 class Bottle extends MovableObject {
   width = 60;
   height = 60;

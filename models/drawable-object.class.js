@@ -1,3 +1,4 @@
+/** Base object with image loading and canvas drawing. */
 class DrawableObject {
   x = 120;
   y = 280;

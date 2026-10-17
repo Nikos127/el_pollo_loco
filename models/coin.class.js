@@ -1,3 +1,4 @@
+/** A collectible coin at a supplied position. */
 class Coin extends MovableObject {
   width = 45;
   height = 45;

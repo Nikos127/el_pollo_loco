@@ -101,9 +101,9 @@ function fullscreen() {
 }
 
 /**
- * Requests fullscreen mode for the supplied element.
+ * Enables the mobile layout, requests native fullscreen if supported, and updates the button.
  * @param {HTMLElement} elem - The element to display in fullscreen.
- * @returns {void}
+ * @returns {Promise<void>} Resolves after the fullscreen attempt and button update.
  */
 async function enterFullscreen(elem) {
   document.body.classList.add('mobile-game-active');
@@ -135,6 +135,7 @@ function closeFullscreen() {
   }
 }
 
+/** Restores the normal layout after native fullscreen ends and updates the button. */
 function restoreLayoutAfterFullscreen() {
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     document.body.classList.remove('mobile-game-active');
@@ -142,25 +143,43 @@ function restoreLayoutAfterFullscreen() {
   updateFullscreenButton();
 }
 
+/** Updates the fullscreen icon, tooltip, and accessible label. */
 function updateFullscreenButton() {
   const button = document.getElementById('fullscreen-button');
-  const isFullscreen = Boolean(
-    document.fullscreenElement ||
-    document.webkitFullscreenElement ||
-    document.body.classList.contains('mobile-game-active'),
-  );
-
-  const arrows = isFullscreen
-    ? 'M3 3L9 9 M9 4V9H4 M21 3L15 9 M15 4V9H20 M3 21L9 15 M4 15H9V20 M21 21L15 15 M20 15H15V20'
-    : 'M9 9L3 3 M3 8V3H8 M15 9L21 3 M16 3H21V8 M9 15L3 21 M3 16V21H8 M15 15L21 21 M16 21H21V16';
-
-  button.querySelector('path').setAttribute('d', arrows);
+  const isFullscreen = isFullscreenActive();
+  updateFullscreenIcon(button, isFullscreen);
   button.title = isFullscreen
     ? 'Klicken für Normalansicht'
     : 'Klicken für Vollbild';
   button.setAttribute('aria-label', button.title);
 }
 
+/**
+ * Checks native fullscreen and the mobile fullscreen layout.
+ * @returns {boolean} Whether either fullscreen mode is active.
+ */
+function isFullscreenActive() {
+  return Boolean(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.body.classList.contains('mobile-game-active'),
+  );
+}
+
+/**
+ * Selects inward or outward arrows for the fullscreen button.
+ * @param {HTMLButtonElement} button - The fullscreen button.
+ * @param {boolean} isFullscreen - Whether fullscreen is active.
+ * @returns {void}
+ */
+function updateFullscreenIcon(button, isFullscreen) {
+  const arrows = isFullscreen
+    ? 'M3 3L9 9 M9 4V9H4 M21 3L15 9 M15 4V9H20 M3 21L9 15 M4 15H9V20 M21 21L15 15 M20 15H15V20'
+    : 'M9 9L3 3 M3 8V3H8 M15 9L21 3 M16 3H21V8 M9 15L3 21 M3 16V21H8 M15 15L21 21 M16 21H21V16';
+  button.querySelector('path').setAttribute('d', arrows);
+}
+
+/** Toggles native fullscreen or exits the mobile fullscreen layout. */
 function toggleFullscreen() {
   if (document.fullscreenElement || document.webkitFullscreenElement) {
     closeFullscreen();
@@ -294,33 +313,59 @@ function resumeGame() {
   isPaused = false;
 }
 
+/**
+ * Registers context-menu suppression and pointer controls for a game button.
+ * @param {HTMLButtonElement} button - A button with a data-key attribute.
+ * @returns {void}
+ */
 function bindMobileButton(button) {
   const key = button.dataset.key;
-  button.addEventListener('contextmenu', (event) => {
+  button.addEventListener('contextmenu', /** Suppresses the browser menu.
+ * @param {MouseEvent} event - Context-menu event.
+ */ (event) => {
     event.preventDefault();
   });
-  button.addEventListener('pointerdown', (event) => {
-    event.preventDefault();
-
-    if (!world || isPaused || world.hasWon || world.character.isDead()) {
-      return;
-    }
-
-    button.setPointerCapture(event.pointerId);
-    keyboard[key] = true;
+  button.addEventListener('pointerdown', /** Handles a touch or mouse press.
+ * @param {PointerEvent} event - Pointer event.
+ */ (event) => {
+    handleMobilePress(event, button, key);
   });
+  bindMobileRelease(button, key);
+}
 
-  const release = () => {
+/**
+ * Captures the pointer and presses the mapped key while gameplay is active.
+ * @param {PointerEvent} event - The pointer-down event.
+ * @param {HTMLButtonElement} button - The pressed game button.
+ * @param {string} key - The keyboard property to activate.
+ * @returns {void}
+ */
+function handleMobilePress(event, button, key) {
+  event.preventDefault();
+  if (!world || isPaused || world.hasWon || world.character.isDead()) {
+    return;
+  }
+  button.setPointerCapture(event.pointerId);
+  keyboard[key] = true;
+}
+
+/**
+ * Releases the mapped key on pointer release, cancellation, capture loss, or blur.
+ * @param {HTMLButtonElement} button - The game button.
+ * @param {string} key - The keyboard property to release.
+ * @returns {void}
+ */
+function bindMobileRelease(button, key) {
+  const release = /** Releases the mapped game key. */ () => {
     keyboard[key] = false;
   };
-
   button.addEventListener('pointerup', release);
   button.addEventListener('pointercancel', release);
   button.addEventListener('lostpointercapture', release);
   window.addEventListener('blur', release);
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', /** Binds the mobile buttons after the DOM is ready. */ () => {
   document
     .querySelectorAll('.mobile-controls button')
     .forEach(bindMobileButton);
@@ -329,6 +374,7 @@ window.addEventListener('DOMContentLoaded', () => {
 const portraitQuery = window.matchMedia(
   '(max-width: 1024px) and (orientation: portrait)',
 );
+/** Pauses an active game when the viewport enters the portrait media query. */
 function handleOrientationChange() {
   if (!portraitQuery.matches || !world || isPaused) return;
   if (world.hasWon || world.character.isDead()) return;

@@ -1,3 +1,4 @@
+/** An enemy that activates on screen and pursues the character. */
 class Endboss extends MovableObject {
   height = 400;
   width = 250;
@@ -52,7 +53,7 @@ class Endboss extends MovableObject {
   ];
 
   /**
-   * Creates and initializes a Endboss instance.
+   * Creates and initializes an Endboss instance.
    */
   constructor() {
     super().loadImage(this.IMAGES_ALERT[0]);
