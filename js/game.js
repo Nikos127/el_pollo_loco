@@ -116,6 +116,7 @@ async function enterFullscreen(elem) {
   } catch (error) {
     console.warn('Vollbild konnte nicht aktiviert werden', error);
   }
+  updateFullscreenButton();
 }
 
 /**
@@ -137,6 +138,37 @@ function closeFullscreen() {
 function restoreLayoutAfterFullscreen() {
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     document.body.classList.remove('mobile-game-active');
+  }
+  updateFullscreenButton();
+}
+
+function updateFullscreenButton() {
+  const button = document.getElementById('fullscreen-button');
+  const isFullscreen = Boolean(
+    document.fullscreenElement ||
+    document.webkitFullscreenElement ||
+    document.body.classList.contains('mobile-game-active'),
+  );
+
+  const arrows = isFullscreen
+    ? 'M3 3L9 9 M9 4V9H4 M21 3L15 9 M15 4V9H20 M3 21L9 15 M4 15H9V20 M21 21L15 15 M20 15H15V20'
+    : 'M9 9L3 3 M3 8V3H8 M15 9L21 3 M16 3H21V8 M9 15L3 21 M3 16V21H8 M15 15L21 21 M16 21H21V16';
+
+  button.querySelector('path').setAttribute('d', arrows);
+  button.title = isFullscreen
+    ? 'Klicken für Normalansicht'
+    : 'Klicken für Vollbild';
+  button.setAttribute('aria-label', button.title);
+}
+
+function toggleFullscreen() {
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    closeFullscreen();
+  } else if (document.body.classList.contains('mobile-game-active')) {
+    document.body.classList.remove('mobile-game-active');
+    updateFullscreenButton();
+  } else {
+    fullscreen();
   }
 }
 
@@ -264,7 +296,9 @@ function resumeGame() {
 
 function bindMobileButton(button) {
   const key = button.dataset.key;
-
+  button.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+  });
   button.addEventListener('pointerdown', (event) => {
     event.preventDefault();
 

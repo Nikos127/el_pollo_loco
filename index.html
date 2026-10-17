@@ -58,13 +58,30 @@
       </button>
 
       <button
+        id="fullscreen-button"
         type="button"
         class="fullscreen-button"
-        onclick="fullscreen()"
-        aria-label="Vollbild aktivieren"
-        title="Vollbild aktiveiren"
+        onclick="toggleFullscreen()"
+        aria-label="Klicken für Vollbild"
+        title="Klicken für Vollbild"
       >
-        ⛶
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path
+            d="M9 9L3 3 M3 8V3H8 M15 9L21 3 M16 3H21V8 M9 15L3 21 M3 16V21H8 M15 15L21 21 M16 21H21V16"
+          />
+        </svg>
       </button>
 
       <button

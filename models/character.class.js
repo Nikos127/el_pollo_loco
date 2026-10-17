@@ -2,6 +2,7 @@ class Character extends MovableObject {
   width = 150;
   height = 250;
   y = 80;
+  groundlevel = 175;
   speed = 10;
   bottles = 0;
   coins = 0;
