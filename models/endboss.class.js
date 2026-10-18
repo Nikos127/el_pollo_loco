@@ -11,10 +11,10 @@ class Endboss extends MovableObject {
   animationState = 'alert';
 
   offset = {
-    top: 60,
-    bottom: 30,
-    left: 20,
-    right: 30,
+    top: 65,
+    bottom: 35,
+    left: 25,
+    right: 35,
   };
 
   IMAGES_ALERT = [

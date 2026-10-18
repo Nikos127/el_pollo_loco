@@ -15,18 +15,24 @@ class MovableObject extends DrawableObject {
    * @returns {void}
    */
   applyGravity() {
-    setStoppableInterval(/** Applies gravity and clamps character landing and fall speed. */ () => {
-      this.previousY = this.y;
-      if ((this.isAboveGround() || this.speedY > 0) && !this.splashed) {
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
-      }
-      if (this instanceof Character && this.y > this.groundlevel) {
-        this.y = this.groundlevel;
-        this.speedY = 0;
-      }
-      this.speedY = Math.max(this.speedY, -30);
-    }, 1000 / 25);
+    setStoppableInterval(
+      /** Advances one gravity step. */ () => this.updateGravity(),
+      1000 / 25,
+    );
+  }
+
+  /** Advances gravity and records the swept path before checking collisions. */
+  updateGravity() {
+    this.previousY = this.y;
+    if ((this.isAboveGround() || this.speedY > 0) && !this.splashed) {
+      this.y -= this.speedY;
+      this.speedY -= this.acceleration;
+    }
+    if (this instanceof Character && this.y > this.groundlevel) {
+      this.y = this.groundlevel;
+      this.speedY = 0;
+    }
+    this.speedY = Math.max(this.speedY, -30);
   }
 
   /**
@@ -79,13 +85,16 @@ class MovableObject extends DrawableObject {
   /**
    * Checks whether the collision rectangles of both objects overlap.
    * @param {MovableObject} mo - The target object.
+   * @param {number} [horizontalInset=0] - Extra space inside this object's left and right edges.
    * @returns {boolean}
    */
-  isColliding(mo) {
+  isColliding(mo, horizontalInset = 0) {
     return (
-      this.x + this.width - this.offset.right > mo.x + mo.offset.left &&
+      this.x + this.width - this.offset.right - horizontalInset >
+        mo.x + mo.offset.left &&
       this.y + this.height - this.offset.bottom > mo.y + mo.offset.top &&
-      this.x + this.offset.left < mo.x + mo.width - mo.offset.right &&
+      this.x + this.offset.left + horizontalInset <
+        mo.x + mo.width - mo.offset.right &&
       this.y + this.offset.top < mo.y + mo.height - mo.offset.bottom
     );
   }

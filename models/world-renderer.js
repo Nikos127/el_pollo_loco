@@ -107,10 +107,10 @@ class WorldRenderer {
   drawGameObjects() {
     const world = this.world;
     world.ctx.translate(world.camera_x, 0);
-    this.addObjectsToMap(world.level.enemies);
-    this.addToMap(world.character);
     this.addObjectsToMap(world.level.bottles);
     this.addObjectsToMap(world.level.coins);
+    this.addObjectsToMap(world.level.enemies);
+    this.addToMap(world.character);
     this.addObjectsToMap(world.throwableObjects);
     world.ctx.translate(-world.camera_x, 0);
   }

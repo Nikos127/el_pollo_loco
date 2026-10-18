@@ -47,7 +47,7 @@ class World {
   }
 
   /**
-   * Starts the intervals for collisions, collectibles, victory checks, and throws.
+   * Starts the intervals for gravity, collisions, collectibles, victory checks, and throws.
    * @returns {void}
    */
   run() {
@@ -157,14 +157,26 @@ class World {
    */
   checkCollidions() {
     if (this.hasWon) return;
+    this.checkCharacterCollisions();
     this.level.enemies.forEach(
-      /** Handles character contact and bottle hits for this enemy. */ (
-        enemy,
-      ) => {
+      /** Checks bottle hits for this enemy. */ (enemy) => {
         const bottle = this.isBottleHit(enemy);
-        this.checkCharacterCollision(enemy);
         this.handleBottleHit(enemy, bottle);
       },
+    );
+  }
+
+  /** Resolves character contact after both movement and gravity steps. */
+  checkCharacterCollisions() {
+    if (this.hasWon) return;
+    const enemies = [...this.level.enemies].sort(
+      /** Resolves the uppermost landing surface first when chickens overlap. */
+      (first, second) =>
+        first.y + first.offset.top - (second.y + second.offset.top),
+    );
+    enemies.forEach(
+      /** Handles character contact with this enemy. */ (enemy) =>
+        this.checkCharacterCollision(enemy),
     );
   }
 
@@ -186,13 +198,14 @@ class World {
    * @returns {void}
    */
   checkCharacterCollision(enemy) {
+    if (enemy.dead || this.character.isDead()) return;
+    const damageInset = 14;
     if (
       !(enemy instanceof Endboss) &&
-      this.character.isAboveEnemy(enemy) &&
-      !enemy.dead
+      this.character.isAboveEnemy(enemy)
     ) {
       this.squashEnemy(enemy);
-    } else if (this.character.isColliding(enemy) && !enemy.dead) {
+    } else if (this.character.isColliding(enemy, damageInset)) {
       this.character.hit();
       this.statusBar.setPercentage(this.character.energy);
     }
@@ -206,6 +219,9 @@ class World {
   squashEnemy(enemy) {
     enemy.currentImage = 0;
     enemy.loadImage(enemy.IMAGES_DEAD[0]);
+    this.character.y =
+      enemy.y + enemy.offset.top - this.character.height + this.character.offset.bottom;
+    this.character.previousY = this.character.y;
     this.character.jump(20);
     this.removeEnemyLater(enemy);
     enemy.dead = true;
@@ -297,10 +313,11 @@ class World {
   }
 
   /**
-   * Updates the world by checking collisions, win conditions, and item collections.
+   * Advances character gravity and resolves collisions before the next rendered frame.
    * @returns {void}
    */
   updateWorld() {
+    this.character.updateGravity();
     this.checkCollidions();
     this.checkWin();
     this.checkBottleCollection();

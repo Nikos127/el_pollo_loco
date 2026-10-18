@@ -6,6 +6,10 @@ let isPaused = false;
 let pauseStartedAt = 0;
 let totalPausedTime = 0;
 
+const fullscreenUnavailableQuery = window.matchMedia(
+  '(width < 720px), (height < 480px)',
+);
+
 const backgroundMusic = new Audio('audio/background-music.mp3');
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.2;
@@ -106,6 +110,7 @@ function fullscreen() {
  * @returns {Promise<void>} Resolves after the fullscreen attempt and button update.
  */
 async function enterFullscreen(elem) {
+  if (fullscreenUnavailableQuery.matches) return;
   document.body.classList.add('mobile-game-active');
   try {
     if (elem.requestFullscreen) {
@@ -191,6 +196,17 @@ function toggleFullscreen() {
   }
 }
 
+/** Leaves fullscreen when the viewport becomes smaller than the canvas. */
+function handleFullscreenAvailability() {
+  if (!fullscreenUnavailableQuery.matches) return;
+  document.body.classList.remove('mobile-game-active');
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    closeFullscreen();
+  }
+  updateFullscreenButton();
+}
+
+fullscreenUnavailableQuery.addEventListener('change', handleFullscreenAvailability);
 document.addEventListener('fullscreenchange', restoreLayoutAfterFullscreen);
 document.addEventListener(
   'webkitfullscreenchange',

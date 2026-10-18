@@ -9,10 +9,10 @@ class Character extends MovableObject {
   coins = 0;
 
   offset = {
-    top: 120,
-    bottom: 30,
-    left: 55,
-    right: 45,
+    top: 100,
+    bottom: 12,
+    left: 25,
+    right: 25,
   };
 
   IMAGES_IDLE = [
@@ -98,7 +98,6 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_IDLE);
     this.loadImages(this.IMAGES_LONG_IDLE);
-    this.applyGravity();
     this.walkingSound.loop = true;
     this.walkingSound.volume = 1;
     this.animate();
@@ -133,6 +132,7 @@ class Character extends MovableObject {
     if (movesLeft) this.moveLeft();
     if (jumps) this.jump();
 
+    this.world.checkCharacterCollisions();
     this.updateMovementActivity(movesRight || movesLeft || jumps);
     this.world.camera_x = -this.x + 100;
   }
@@ -206,7 +206,7 @@ class Character extends MovableObject {
   }
 
   /**
-   * Checks whether the falling feet cross the enemy top with central foot overlap.
+   * Checks whether the falling feet cross the enemy top within the character's width.
    * @param {Chicken|Endboss} enemy - The enemy whose top and horizontal bounds are checked.
    * @returns {boolean}
    */
@@ -215,11 +215,11 @@ class Character extends MovableObject {
     const previousFeet = this.previousY + this.height - this.offset.bottom;
     const enemyTop = enemy.y + enemy.offset.top;
     return (
-      this.speedY < 0 &&
+      this.y > this.previousY &&
       previousFeet <= enemyTop &&
       feet >= enemyTop &&
-      this.x + this.width / 2 + 10 > enemy.x + enemy.offset.left &&
-      this.x + this.width / 2 - 10 < enemy.x + enemy.width - enemy.offset.right
+      this.x + this.width - this.offset.right > enemy.x + enemy.offset.left &&
+      this.x + this.offset.left < enemy.x + enemy.width - enemy.offset.right
     );
   }
 

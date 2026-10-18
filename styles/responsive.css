@@ -33,7 +33,7 @@
     max-width: 100%;
   }
 
-  body:not(.mobile-game-active) #fullscreen:not(:fullscreen)canvas {
+  body:not(.mobile-game-active) #fullscreen:not(:fullscreen) canvas {
     width: 100%;
     height: auto;
   }
@@ -51,10 +51,10 @@
   }
 
   .fullscreen-button {
+    --button-edge-offset: 12px;
     width: 36px;
     height: 36px;
     font-size: 22px;
-    right: 12px;
   }
 
   .music-button {
@@ -78,10 +78,10 @@
   }
 
   .fullscreen-button {
+    --button-edge-offset: 8px;
     width: 32px;
     height: 32px;
     font-size: 18px;
-    right: 8px;
     bottom: 8px;
   }
 
@@ -95,6 +95,16 @@
 
   .pause-button {
     right: 88px;
+  }
+}
+
+@media (width < 720px), (height < 480px) {
+  #fullscreen-button {
+    display: none;
+  }
+
+  .music-button {
+    right: var(--button-edge-offset);
   }
 }
 
